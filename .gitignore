@@ -1,5 +1,7 @@
 local.properties
 target
 project/project
+.idea
+proguard-sbt.txt
 *.swp
 *.swo
