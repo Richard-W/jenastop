@@ -25,4 +25,6 @@ scalaVersion := "2.11.7"
 
 scalacOptions ++= Seq("-target:jvm-1.7", "-feature")
 
+javacOptions ++= Seq("-source", "1.7", "-target", "1.7")
+
 scalariformSettings
