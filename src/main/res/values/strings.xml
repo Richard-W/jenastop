@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Jenastop</string>
+    <string name="title_activity_main">Jenastop</string>
+    <string name="failed">Failed</string>
+    <string name="retry">Retry</string>
+    <string name="dummy">Dummy (you should not see this)</string>
+    <string name="action_settings">Settings</string>
+    <string name="listitem_station_fav">Favorite</string>
+    <string name="title_activity_schedule">Next stops</string>
+    <string name="action_refresh">Refresh</string>
+</resources>

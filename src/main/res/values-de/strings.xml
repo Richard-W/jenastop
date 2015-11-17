@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Jenastop</string>
+    <string name="action_refresh">Neu laden</string>
+    <string name="action_settings">Einstellungen</string>
+    <string name="dummy">Dummy (Du solltest das nicht sehen)</string>
+    <string name="failed">Fehlgeschlagen</string>
+    <string name="listitem_station_fav">Favorite</string>
+    <string name="retry">Nochmal versuchen</string>
+    <string name="title_activity_main">Jenastop</string>
+    <string name="title_activity_schedule">Fahrplan</string>
+</resources>
