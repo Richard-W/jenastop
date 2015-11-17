@@ -26,9 +26,6 @@ import scala.collection.JavaConversions._
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.xml.XML
 
-/**
- * Created by richard on 08.11.15.
- */
 class StationsActivity extends Activity {
 
   var listAdapter: StationsAdapter = null

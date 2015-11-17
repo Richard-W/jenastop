@@ -23,9 +23,6 @@ import android.view.View.OnClickListener
 import android.view.{ View, ViewGroup }
 import android.widget.{ ArrayAdapter, ImageView, TextView }
 
-/**
- * Created by richard on 08.11.15.
- */
 class StationsAdapter(activity: Activity, val list: java.util.List[Station]) extends ArrayAdapter[Station](activity, R.layout.listitem_station, list) {
   implicit val db = new DatabaseHelper(activity)
 

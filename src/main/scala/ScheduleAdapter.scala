@@ -20,9 +20,6 @@ import java.util.{ Calendar, Collections, GregorianCalendar }
 import android.view.{ View, ViewGroup }
 import android.widget.{ ArrayAdapter, TextView }
 
-/**
- * Created by richard on 08.11.15.
- */
 class ScheduleAdapter(activity: ScheduleActivity, val list: java.util.List[Schedule]) extends ArrayAdapter[Schedule](activity, R.layout.listitem_schedule, list) {
   override def getView(position: Int, convertView: View, parent: ViewGroup): View = {
     val view = if (convertView == null) {

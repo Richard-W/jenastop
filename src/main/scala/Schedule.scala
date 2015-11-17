@@ -17,9 +17,6 @@ package net.metanoise.android.jenastop
 
 import java.util.GregorianCalendar
 
-/**
- * Created by richard on 08.11.15.
- */
 case class Schedule(
     line: String,
     destination: String,

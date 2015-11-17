@@ -15,9 +15,6 @@
  */
 package net.metanoise.android.jenastop
 
-/**
- * Created by richard on 08.11.15.
- */
 case class Station(
     name: String,
     favorite: Boolean) extends Ordered[Station] {
