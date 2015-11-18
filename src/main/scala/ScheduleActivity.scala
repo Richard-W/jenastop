@@ -15,24 +15,19 @@
  */
 package net.metanoise.android.jenastop
 
-import java.io.InputStreamReader
-import java.net.{ URL, URLEncoder }
-import java.util
-import java.util.{ GregorianCalendar, Locale }
-
 import android.app.Activity
 import android.os.{ AsyncTask, Bundle }
 import android.view.{ Menu, MenuItem, View }
 import android.widget.{ Button, ListView, ProgressBar, TextView }
 
 import scala.collection.JavaConversions._
-import scala.concurrent.{ ExecutionContext, Future }
-import scala.xml.XML
+import scala.concurrent.ExecutionContext
 
 class ScheduleActivity extends Activity {
 
   var station: String = null
   var listAdapter: ScheduleAdapter = null
+  implicit val activity = this
 
   override def onCreateOptionsMenu(menu: Menu): Boolean = {
     getMenuInflater.inflate(R.menu.menu_schedule, menu)
@@ -54,32 +49,7 @@ class ScheduleActivity extends Activity {
 
   def fetchSchedule = {
     implicit val ec: ExecutionContext = ExecutionContext.fromExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
-    implicit val activity = this
-    Future {
-      val encodedStation = URLEncoder.encode(station.toLowerCase(Locale.GERMAN), "UTF-8")
-      val url = new URL("http://fpl.jenah.de/bontip-ifgi/php/getStation.php?action=getMastNo&q=" + encodedStation)
-      val xml = XML.load(new InputStreamReader(url.openConnection.getInputStream, "ISO-8859-1"))
-      xml \\ "stopno" map {
-        _.text
-      } flatMap { stopno ⇒
-        val url = new URL("http://fpl.jenah.de/bontip-ifgi/php/proxy.php?vsz=60&azbid=" + stopno)
-        val scheduleXml = XML.load(new java.io.InputStreamReader(url.openConnection.getInputStream, "ISO-8859-1"))
-        scheduleXml \\ "AZBFahrplanlage" map { stop ⇒
-          def parseTime(str: String): GregorianCalendar = {
-            val fields = str.split("[\\-T:]") map {
-              _.toInt
-            }
-            new GregorianCalendar(fields(0), fields(1), fields(2), fields(3), fields(4), fields(5))
-          }
-          Schedule(
-            (stop \\ "LinienText").text,
-            (stop \\ "RichtungsText").text,
-            parseTime((stop \\ "AnkunftszeitAZBPlan").text),
-            parseTime((stop \\ "AnkunftszeitAZBPrognose").text)
-          )
-        }
-      }
-    } mapUI { schedules ⇒
+    Schedule.fetch(station) mapUI { schedules ⇒
       listAdapter.addAll(schedules)
       listAdapter.notifyDataSetChanged()
       progressBar.setVisibility(View.GONE)
@@ -125,7 +95,7 @@ class ScheduleActivity extends Activity {
     station = intent.getStringExtra("station")
     label.setText(station)
 
-    listAdapter = new ScheduleAdapter(this, new util.ArrayList[Schedule])
+    listAdapter = new ScheduleAdapter(this, new java.util.ArrayList[Schedule])
     listView.setAdapter(listAdapter)
     listView.setClickable(false)
 

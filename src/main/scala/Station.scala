@@ -15,6 +15,13 @@
  */
 package net.metanoise.android.jenastop
 
+import java.net.URL
+
+import android.app.Activity
+
+import scala.concurrent.{ ExecutionContext, Future }
+import scala.xml.XML
+
 case class Station(
     name: String,
     favorite: Boolean) extends Ordered[Station] {
@@ -31,6 +38,20 @@ case class Station(
       1
     } else {
       name.compare(other.name)
+    }
+  }
+}
+
+object Station {
+  def fetch(favorites: Set[String])(implicit ec: ExecutionContext, activity: Activity): Future[Seq[Station]] = {
+    val favorites = new DatabaseHelper(activity).favorites
+    Future {
+      val url = new URL("http://www.jenah.de/mapper.php?action=getStStartBy")
+      val stationsXml = XML.load(new java.io.InputStreamReader(url.openConnection.getInputStream, "UTF-8"))
+      val stationNames = stationsXml \\ "name" map {
+        _.text
+      }
+      stationNames map { name ⇒ Station(name = name, favorite = favorites.contains(name)) }
     }
   }
 }

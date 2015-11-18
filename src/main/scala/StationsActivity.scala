@@ -15,20 +15,18 @@
  */
 package net.metanoise.android.jenastop
 
-import java.net.URL
-
 import android.app.Activity
 import android.os.{ AsyncTask, Bundle }
 import android.view.View
 import android.widget.{ Button, ListView, ProgressBar, TextView }
 
 import scala.collection.JavaConversions._
-import scala.concurrent.{ ExecutionContext, Future }
-import scala.xml.XML
+import scala.concurrent.ExecutionContext
 
 class StationsActivity extends Activity {
 
   var listAdapter: StationsAdapter = null
+  implicit val activity = this
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
@@ -44,16 +42,8 @@ class StationsActivity extends Activity {
 
   def fetchStations = {
     implicit val ec: ExecutionContext = ExecutionContext.fromExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
-    implicit val activity = this
     val favorites = new DatabaseHelper(this).favorites
-    Future {
-      val url = new URL("http://www.jenah.de/mapper.php?action=getStStartBy")
-      val stationsXml = XML.load(new java.io.InputStreamReader(url.openConnection.getInputStream, "UTF-8"))
-      val stationNames = stationsXml \\ "name" map {
-        _.text
-      }
-      stationNames map { name ⇒ Station(name = name, favorite = favorites.contains(name)) }
-    } mapUI { stations ⇒
+    Station.fetch(favorites) mapUI { stations ⇒
       progressBar.setVisibility(View.GONE)
       listAdapter.list.clear()
       listAdapter.list.addAll(stations)
