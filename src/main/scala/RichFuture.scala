@@ -18,36 +18,43 @@ package net.metanoise.android.jenastop
 import android.app.Activity
 
 import scala.concurrent.{ Promise, Future, ExecutionContext }
+import scala.util.{ Failure, Success }
 
 class RichFuture[T](future: Future[T]) {
   def mapUI[U](func: (T) ⇒ U)(implicit activity: Activity, ec: ExecutionContext): Future[U] = {
     val promise = Promise[U]
-    future map { t ⇒
-      activity.runOnUiThread(new Runnable {
-        override def run(): Unit = {
-          try {
-            promise.success(func(t))
-          } catch {
-            case t: Throwable ⇒ promise.failure(t)
+    future andThen {
+      case Success(value) ⇒
+        activity.runOnUiThread(new Runnable {
+          override def run(): Unit = {
+            try {
+              promise.success(func(value))
+            } catch {
+              case t: Throwable ⇒ promise.failure(t)
+            }
           }
-        }
-      })
+        })
+      case Failure(fail) ⇒
+        promise.failure(fail)
     }
     promise.future
   }
 
-  def recoverUI[U](func: PartialFunction[Throwable, U])(implicit activity: Activity, ec: ExecutionContext): Future[U] = {
+  def recoverUI[U >: T](func: PartialFunction[Throwable, U])(implicit activity: Activity, ec: ExecutionContext): Future[U] = {
     val promise = Promise[U]
-    future recover {
-      case t: Throwable ⇒ activity.runOnUiThread(new Runnable {
-        override def run(): Unit = {
-          try {
-            promise.success(func(t))
-          } catch {
-            case t: Throwable ⇒ promise.failure(t)
+    future andThen {
+      case Success(value) ⇒
+        promise.success(value)
+      case Failure(fail) ⇒
+        activity.runOnUiThread(new Runnable {
+          override def run(): Unit = {
+            try {
+              promise.success(func(fail))
+            } catch {
+              case t: Throwable ⇒ promise.failure(t)
+            }
           }
-        }
-      })
+        })
     }
     promise.future
   }
