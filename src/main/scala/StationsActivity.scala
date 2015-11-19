@@ -17,7 +17,7 @@ package net.metanoise.android.jenastop
 
 import android.app.Activity
 import android.os.{ AsyncTask, Bundle }
-import android.view.View
+import android.view.{ MenuItem, Menu, View }
 import android.widget.{ Button, ListView, ProgressBar, TextView }
 
 import scala.collection.JavaConversions._
@@ -28,6 +28,21 @@ class StationsActivity extends Activity {
   var listAdapter: StationsAdapter = null
   implicit val activity = this
 
+  override def onCreateOptionsMenu(menu: Menu): Boolean = {
+    getMenuInflater.inflate(R.menu.menu_stations, menu)
+    true
+  }
+
+  override def onOptionsItemSelected(item: MenuItem): Boolean = {
+    item.getItemId match {
+      case R.id.action_refresh ⇒
+        fetchStations
+        true
+      case _ ⇒
+        super.onOptionsItemSelected(item)
+    }
+  }
+
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_stations)
@@ -37,15 +52,36 @@ class StationsActivity extends Activity {
     listAdapter = new StationsAdapter(this, new java.util.ArrayList[Station])
     listView.setAdapter(listAdapter)
 
-    fetchStations
+    val db = new DatabaseHelper(this)
+    val stations = db.stations
+
+    // After upgrade from Database version 1 to 2 the database only contains favorite stations.
+    // Also the set might be entirely empty. In both cases we have to update the stations
+    // database. If a user has marked every stations favorite this always refreshes, which
+    // might be considered a FIXME.
+    if (stations.exists { !_.favorite }) {
+      listAdapter.list.addAll(stations)
+      listAdapter.notifyDataSetChanged()
+    } else {
+      fetchStations
+    }
   }
 
   def fetchStations = {
     implicit val ec: ExecutionContext = ExecutionContext.fromExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
-    val favorites = new DatabaseHelper(this).favorites
-    Station.fetch(favorites) mapUI { stations ⇒
+    val db = new DatabaseHelper(this)
+
+    progressBar.setVisibility(View.VISIBLE)
+    listView.setVisibility(View.VISIBLE)
+    failedText.setVisibility(View.GONE)
+    retryButton.setVisibility(View.GONE)
+    errorDescription.setVisibility(View.GONE)
+    listAdapter.list.clear()
+    listAdapter.notifyDataSetChanged()
+
+    db.updateStations() mapUI { _ ⇒
+      val stations = db.stations
       progressBar.setVisibility(View.GONE)
-      listAdapter.list.clear()
       listAdapter.list.addAll(stations)
       listAdapter.notifyDataSetChanged()
     } recoverUI {
@@ -70,11 +106,6 @@ class StationsActivity extends Activity {
   def listView = findViewById(R.id.stations_list_view).asInstanceOf[ListView]
 
   def onRetryButtonClick(view: View) {
-    progressBar.setVisibility(View.VISIBLE)
-    listView.setVisibility(View.VISIBLE)
-    failedText.setVisibility(View.GONE)
-    retryButton.setVisibility(View.GONE)
-    errorDescription.setVisibility(View.GONE)
 
     listAdapter.list.clear()
     listAdapter.notifyDataSetChanged()

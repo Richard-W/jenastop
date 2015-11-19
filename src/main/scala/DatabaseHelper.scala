@@ -21,40 +21,83 @@ import android.database.sqlite.{ SQLiteDatabase, SQLiteOpenHelper }
 import android.util.Log
 
 import scala.annotation.tailrec
+import scala.concurrent.{ ExecutionContext, Future }
 
 class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, DatabaseHelper.DATABASE_NAME, null, DatabaseHelper.DATABASE_VERSION) {
   def onCreate(db: SQLiteDatabase) = {
-    db.execSQL("CREATE TABLE favs ( " + "station TEXT PRIMARY KEY )")
+    db.execSQL("CREATE TABLE `stations` (`name` TEXT PRIMARY KEY, `favorite` INT)");
+  }
+
+  @tailrec
+  private def cursorToSet(cursor: Cursor, set: Set[String] = Set()): Set[String] = {
+    if (cursor.isAfterLast) set
+    else {
+      val elem = cursor.getString(0)
+      cursor.moveToNext
+      cursorToSet(cursor, set + elem)
+    }
   }
 
   def onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) = {
+    if (oldVersion <= 1) {
+      db.beginTransaction()
+      try {
+        val favs = cursorToSet(db.rawQuery("SELECT * FROM `favs`", Array()))
+        db.execSQL("DROP TABLE `favs`")
+        db.execSQL("CREATE TABLE `stations` (`name` TEXT PRIMARY KEY, `favorite` INT)");
+        for (fav <- favs) {
+          db.execSQL("INSERT INTO `stations` (`name`, `favorite`) VALUES (?, '1')", Array(fav))
+        }
+        db.setTransactionSuccessful()
+      } catch {
+        case t: Throwable ⇒ Log.w("Jenastop", t)
+      } finally {
+        db.endTransaction()
+      }
+    }
   }
 
-  def favorites: Set[String] = {
-    val cursor = getReadableDatabase.rawQuery("SELECT * FROM `favs`", null)
+  def stations: Set[Station] = {
+    val db = this.getReadableDatabase
+    val cursor = db.rawQuery("SELECT * FROM `stations`", Array())
     @tailrec
-    def helper(set: Set[String]): Set[String] = {
+    def helper(cursor: Cursor, set: Set[Station] = Set()): Set[Station] = {
       if (cursor.isAfterLast) set
       else {
-        val elem = cursor.getString(0)
-        cursor.moveToNext
-        helper(set + elem)
+        val name = cursor.getString(0)
+        val favorite = cursor.getInt(1) != 0
+        cursor.moveToNext()
+        helper(cursor, set + Station(name, favorite))
       }
     }
     cursor.moveToFirst()
-    helper(Set())
+    helper(cursor)
+  }
+
+  def updateStations()(implicit ec: ExecutionContext): Future[Unit] = {
+    val favs: Set[String] = this.stations filter { _.favorite } map { _.name }
+    Station.fetchNames map { names ⇒
+      val db = this.getWritableDatabase
+      db.beginTransaction()
+      try {
+        db.execSQL("DELETE FROM `stations`")
+        for (name <- names) {
+          db.execSQL("INSERT INTO `stations` (`name`, `favorite`) VALUES (?, ?)", Array(name, if (favs.contains(name)) "1" else "0"))
+        }
+        db.setTransactionSuccessful()
+      } catch {
+        case t: Throwable ⇒ Log.w("Jenastop", t)
+      } finally {
+        db.endTransaction()
+      }
+    }
   }
 
   def setFavorite(station: Station, favorite: Boolean) = {
-    val db: SQLiteDatabase = this.getWritableDatabase
+    val db = this.getWritableDatabase
     db.beginTransaction()
     try {
-      val cursor: Cursor = db.rawQuery("SELECT * FROM `favs` WHERE `station` = ?", Array(station.name))
-      if (cursor.getCount == 0 && favorite) {
-        db.execSQL("INSERT INTO `favs` (`station`) VALUES ( ? )", Array(station.name))
-      } else if (!favorite) {
-        db.execSQL("DELETE FROM `favs` WHERE `station` = ?", Array(station.name))
-      }
+      db.execSQL("UPDATE `stations` SET `favorite` = ? WHERE `name` = ?", Array(if (favorite) "1" else "0", station.name))
       db.setTransactionSuccessful()
     } catch {
       case e: Exception =>
@@ -66,6 +109,6 @@ class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, Databas
 }
 
 object DatabaseHelper {
-  private val DATABASE_VERSION: Int = 1
+  private val DATABASE_VERSION: Int = 2
   private val DATABASE_NAME: String = "jenastop_storage"
 }
