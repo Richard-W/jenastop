@@ -42,7 +42,9 @@ class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, Databas
     if (oldVersion <= 1) {
       db.beginTransaction()
       try {
-        val favs = cursorToSet(db.rawQuery("SELECT * FROM `favs`", Array()))
+        val cursor = db.rawQuery("SELECT * FROM `favs`", Array())
+        cursor.moveToFirst
+        val favs = cursorToSet(cursor)
         db.execSQL("DROP TABLE `favs`")
         db.execSQL("CREATE TABLE `stations` (`name` TEXT PRIMARY KEY, `favorite` INT)");
         for (fav <- favs) {
