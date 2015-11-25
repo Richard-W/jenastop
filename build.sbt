@@ -6,7 +6,7 @@ name := "jenastop"
 
 versionName := Some("1.4")
 
-versionCode := Some(11)
+versionCode := Some(12)
 
 platformTarget in Android := "android-23"
 
