@@ -93,7 +93,7 @@ class ScheduleActivity extends Activity {
 
     val intent = getIntent
     station = intent.getStringExtra("station")
-    label.setText(station)
+    getActionBar.setSubtitle(station)
 
     listAdapter = new ScheduleAdapter(this, new java.util.ArrayList[Schedule])
     listView.setAdapter(listAdapter)
@@ -101,6 +101,4 @@ class ScheduleActivity extends Activity {
 
     fetchSchedule
   }
-
-  def label = findViewById(R.id.schedule_label).asInstanceOf[TextView]
 }
