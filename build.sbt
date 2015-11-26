@@ -4,7 +4,7 @@ android.Plugin.androidBuild
 
 name := "jenastop"
 
-versionName := Some("1.4")
+versionName := Some("1.5")
 
 versionCode := Some(13)
 
