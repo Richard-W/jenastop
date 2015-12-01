@@ -18,7 +18,8 @@ proguardOptions in Android ++= Seq("-dontobfuscate", "-dontoptimize")
 
 libraryDependencies ++= Seq(
   "com.android.support" % "appcompat-v7" % "23.1.1",
-  "org.scala-lang.modules" %% "scala-xml" % "1.0.5"
+  "org.scala-lang.modules" %% "scala-xml" % "1.0.5",
+  "io.spray" %%  "spray-json" % "1.3.2"
 )
 
 scalaVersion := "2.11.7"

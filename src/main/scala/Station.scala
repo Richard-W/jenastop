@@ -16,9 +16,13 @@
 package net.metanoise.android.jenastop
 
 import java.net.URL
+import java.net.HttpURLConnection
 
+import spray.json._
+
+import scala.annotation.tailrec
 import scala.concurrent.{ ExecutionContext, Future }
-import scala.xml.XML
+import scala.io.Source
 
 case class Station(
     name: String,
@@ -42,10 +46,28 @@ case class Station(
 
 object Station {
   def fetchNames()(implicit ec: ExecutionContext): Future[Seq[String]] = Future {
-    val url = new URL("http://www.jenah.de/mapper.php?action=getStStartBy")
-    val stationsXml = XML.load(new java.io.InputStreamReader(url.openConnection.getInputStream, "UTF-8"))
-    stationsXml \\ "name" map {
-      _.text
+    val url = new URL("http://www.nahverkehr-jena.de/index.php?eID=ajaxDispatcher&request[pluginName]=Stopsmonitor&request[controller]=Stopsmonitor&request[action]=getAllStops")
+    val conn = url.openConnection.asInstanceOf[HttpURLConnection]
+    val json = Source.fromInputStream(conn.getInputStream).mkString.parseJson
+
+    val stations = json.asInstanceOf[JsArray].elements map { entry ⇒
+      entry.asInstanceOf[JsObject]
+        .fields("children").asInstanceOf[JsObject]
+        .fields("name").asInstanceOf[JsArray]
+        .elements(0).asInstanceOf[JsObject]
+        .fields("value").asInstanceOf[JsString]
+        .value
     }
+
+    @tailrec
+    def unique(list: Seq[String], uniqueList: Seq[String] = Seq()): Seq[String] = {
+      if (list.isEmpty) uniqueList
+      else {
+        if (uniqueList contains list.head) unique(list.tail, uniqueList)
+        else unique(list.tail, uniqueList :+ list.head)
+      }
+    }
+
+    unique(stations)
   }
 }
