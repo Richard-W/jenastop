@@ -39,7 +39,7 @@ class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, Databas
   }
 
   def onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) = {
-    if (oldVersion <= 1) {
+    if (oldVersion < 2 && newVersion >= 2) {
       db.beginTransaction()
       try {
         val cursor = db.rawQuery("SELECT * FROM `favs`", Array())
@@ -56,6 +56,11 @@ class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, Databas
       } finally {
         db.endTransaction()
       }
+    }
+
+    if (oldVersion < 3 && newVersion >= 3) {
+      // A lot of stations changed. This will trigger a refresh.
+      db.execSQL("DELETE FROM `stations` WHERE `favorite` = '0'")
     }
   }
 
@@ -111,6 +116,6 @@ class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, Databas
 }
 
 object DatabaseHelper {
-  private val DATABASE_VERSION: Int = 2
+  private val DATABASE_VERSION: Int = 3
   private val DATABASE_NAME: String = "jenastop_storage"
 }
