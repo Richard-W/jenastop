@@ -59,15 +59,6 @@ object Station {
         .value
     }
 
-    @tailrec
-    def unique(list: Seq[String], uniqueList: Seq[String] = Seq()): Seq[String] = {
-      if (list.isEmpty) uniqueList
-      else {
-        if (uniqueList contains list.head) unique(list.tail, uniqueList)
-        else unique(list.tail, uniqueList :+ list.head)
-      }
-    }
-
     unique(stations)
   }
 }
