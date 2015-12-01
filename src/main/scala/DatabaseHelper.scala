@@ -25,7 +25,7 @@ import scala.concurrent.{ ExecutionContext, Future }
 
 class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, DatabaseHelper.DATABASE_NAME, null, DatabaseHelper.DATABASE_VERSION) {
   def onCreate(db: SQLiteDatabase) = {
-    db.execSQL("CREATE TABLE `stations` (`name` TEXT PRIMARY KEY, `favorite` INT)")
+    db.execSQL("CREATE TABLE `stations` (`name` TEXT PRIMARY KEY, `favorite` INT, `stoppoints` TEXT)")
     db.execSQL("CREATE TABLE `flags` (`name` TEXT PRIMARY KEY, `value` INT)")
   }
 
