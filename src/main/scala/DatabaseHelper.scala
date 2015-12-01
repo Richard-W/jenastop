@@ -27,6 +27,7 @@ class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, Databas
   def onCreate(db: SQLiteDatabase) = {
     db.execSQL("CREATE TABLE `stations` (`name` TEXT PRIMARY KEY, `favorite` INT, `stoppoints` TEXT)")
     db.execSQL("CREATE TABLE `flags` (`name` TEXT PRIMARY KEY, `value` INT)")
+    db.execSQL("INSERT INTO `flags` (`name`, `value`) VALUES ('needStationsUpdate', '1')")
   }
 
   @tailrec
