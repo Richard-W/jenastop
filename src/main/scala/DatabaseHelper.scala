@@ -25,7 +25,8 @@ import scala.concurrent.{ ExecutionContext, Future }
 
 class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, DatabaseHelper.DATABASE_NAME, null, DatabaseHelper.DATABASE_VERSION) {
   def onCreate(db: SQLiteDatabase) = {
-    db.execSQL("CREATE TABLE `stations` (`name` TEXT PRIMARY KEY, `favorite` INT)");
+    db.execSQL("CREATE TABLE `stations` (`name` TEXT PRIMARY KEY, `favorite` INT)")
+    db.execSQL("CREATE TABLE `flags` (`name` TEXT PRIMARY KEY, `value` INT)")
   }
 
   @tailrec
@@ -46,7 +47,7 @@ class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, Databas
         cursor.moveToFirst
         val favs = cursorToSet(cursor)
         db.execSQL("DROP TABLE `favs`")
-        db.execSQL("CREATE TABLE `stations` (`name` TEXT PRIMARY KEY, `favorite` INT)");
+        db.execSQL("CREATE TABLE `stations` (`name` TEXT PRIMARY KEY, `favorite` INT)")
         for (fav <- favs) {
           db.execSQL("INSERT INTO `stations` (`name`, `favorite`) VALUES (?, '1')", Array(fav))
         }
@@ -62,6 +63,25 @@ class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, Databas
       // A lot of stations changed. This will trigger a refresh.
       db.execSQL("DELETE FROM `stations` WHERE `favorite` = '0'")
     }
+
+    if (oldVersion < 4 && newVersion >= 4) {
+      // Add field for stopnos
+      db.execSQL("ALTER TABLE `stations` ADD COLUMN `stoppoints` TEXT")
+      db.execSQL("CREATE TABLE `flags` (`name` TEXT PRIMARY KEY, `value` INT)")
+      db.execSQL("INSERT INTO `flags` (`name`, `value`) VALUES ('needStationsUpdate', '1')")
+    }
+  }
+
+  def flag(name: String): Boolean = {
+    val db = this.getReadableDatabase
+    val cursor = db.rawQuery("SELECT `value` FROM `flags` WHERE `name` = ?", Array(name))
+    cursor.moveToFirst()
+    cursor.getInt(0) != 0
+  }
+
+  def flag(name: String, value: Boolean): Unit = {
+    val db = this.getWritableDatabase
+    db.execSQL("UPDATE `flags` SET `value` = ? WHERE `name` = ?", Array(if (value) "1" else "0", name))
   }
 
   def stations: Set[Station] = {
@@ -116,6 +136,6 @@ class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, Databas
 }
 
 object DatabaseHelper {
-  private val DATABASE_VERSION: Int = 3
+  private val DATABASE_VERSION: Int = 4
   private val DATABASE_NAME: String = "jenastop_storage"
 }

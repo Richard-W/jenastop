@@ -55,15 +55,12 @@ class StationsActivity extends Activity {
     val db = new DatabaseHelper(this)
     val stations = db.stations
 
-    // After upgrade from Database version 1 to 2 the database only contains favorite stations.
-    // Also the set might be entirely empty. In both cases we have to update the stations
-    // database. If a user has marked every stations favorite this always refreshes, which
-    // might be considered a FIXME.
-    if (stations.exists { !_.favorite }) {
+    if (db.flag("needStationsUpdate")) {
+      fetchStations
+      db.flag("needStationsUpdate", false)
+    } else {
       listAdapter.list.addAll(stations)
       listAdapter.notifyDataSetChanged()
-    } else {
-      fetchStations
     }
   }
 
