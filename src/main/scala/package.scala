@@ -22,12 +22,4 @@ import scala.language.implicitConversions
 package object jenastop {
   implicit def futureToRichFuture[T](future: Future[T]): RichFuture[T] = new RichFuture(future)
 
-  @tailrec
-  def unique(list: Seq[String], uniqueList: Seq[String] = Seq()): Seq[String] = {
-    if (list.isEmpty) uniqueList
-    else {
-      if (uniqueList contains list.head) unique(list.tail, uniqueList)
-      else unique(list.tail, uniqueList :+ list.head)
-    }
-  }
 }

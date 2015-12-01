@@ -20,12 +20,12 @@ import java.net.HttpURLConnection
 
 import spray.json._
 
-import scala.annotation.tailrec
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.io.Source
 
 case class Station(
     name: String,
+    stopPoints: Seq[String],
     favorite: Boolean) extends Ordered[Station] {
 
   def setFavorite(favorite: Boolean)(implicit db: DatabaseHelper): Station = {
@@ -45,20 +45,36 @@ case class Station(
 }
 
 object Station {
-  def fetchNames()(implicit ec: ExecutionContext): Future[Seq[String]] = Future {
+  def fetchStations()(implicit ec: ExecutionContext): Future[Seq[(String, Seq[String])]] = Future {
     val url = new URL("http://www.nahverkehr-jena.de/index.php?eID=ajaxDispatcher&request[pluginName]=Stopsmonitor&request[controller]=Stopsmonitor&request[action]=getAllStops")
     val conn = url.openConnection.asInstanceOf[HttpURLConnection]
     val json = Source.fromInputStream(conn.getInputStream).mkString.parseJson
 
-    val stations = json.asInstanceOf[JsArray].elements map { entry ⇒
-      entry.asInstanceOf[JsObject]
-        .fields("children").asInstanceOf[JsObject]
-        .fields("name").asInstanceOf[JsArray]
-        .elements(0).asInstanceOf[JsObject]
-        .fields("value").asInstanceOf[JsString]
-        .value
-    }
-
-    unique(stations)
+    (json.asInstanceOf[JsArray].elements map { _.asInstanceOf[JsObject].fields("children").asInstanceOf[JsObject] })
+      .groupBy { entry ⇒
+        entry
+          .fields("name").asInstanceOf[JsArray]
+          .elements(0).asInstanceOf[JsObject]
+          .fields("value").asInstanceOf[JsString]
+          .value
+      }.toSeq map {
+        case (name: String, entries: Seq[JsObject]) ⇒
+          val stopPoints = (entries flatMap { entry ⇒
+            entry
+              .fields("stopPoints").asInstanceOf[JsArray]
+              .elements(0).asInstanceOf[JsObject]
+              .fields("children").asInstanceOf[JsObject]
+              .fields("stopPoint").asInstanceOf[JsArray]
+              .elements map { stopPoint ⇒
+                stopPoint.asInstanceOf[JsObject]
+                  .fields("children").asInstanceOf[JsObject]
+                  .fields("pointNo").asInstanceOf[JsArray]
+                  .elements(0).asInstanceOf[JsObject]
+                  .fields("value").asInstanceOf[JsString]
+                  .value
+              }
+          } groupBy { a ⇒ a }).toSeq map { case (a, b) ⇒ a } // Make stopPoints unique
+          (name, stopPoints)
+      }
   }
 }

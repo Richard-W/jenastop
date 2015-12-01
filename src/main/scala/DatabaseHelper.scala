@@ -93,8 +93,10 @@ class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, Databas
       else {
         val name = cursor.getString(0)
         val favorite = cursor.getInt(1) != 0
+        val stopPointsStr = cursor.getString(2)
+        val stopPoints = if (stopPointsStr != null) stopPointsStr.split(",").toSeq filter { _.length > 0 } else Seq()
         cursor.moveToNext()
-        helper(cursor, set + Station(name, favorite))
+        helper(cursor, set + Station(name, stopPoints, favorite))
       }
     }
     cursor.moveToFirst()
@@ -103,13 +105,14 @@ class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, Databas
 
   def updateStations()(implicit ec: ExecutionContext): Future[Unit] = {
     val favs: Set[String] = this.stations filter { _.favorite } map { _.name }
-    Station.fetchNames map { names ⇒
+    Station.fetchStations map { stationTuples ⇒
       val db = this.getWritableDatabase
       db.beginTransaction()
       try {
         db.execSQL("DELETE FROM `stations`")
-        for (name <- names) {
-          db.execSQL("INSERT INTO `stations` (`name`, `favorite`) VALUES (?, ?)", Array(name, if (favs.contains(name)) "1" else "0"))
+        for ((name, stopPoints) <- stationTuples) {
+          val spStr = stopPoints.tail.fold(stopPoints.head) { case (a, b) ⇒ a + "," + b }
+          db.execSQL("INSERT INTO `stations` (`name`, `favorite`, `stoppoints`) VALUES (?, ?, ?)", Array(name, if (favs.contains(name)) "1" else "0", spStr))
         }
         db.setTransactionSuccessful()
       } catch {
