@@ -15,48 +15,36 @@
  */
 package net.metanoise.android.jenastop
 
-import java.net.{ HttpURLConnection, URL, URLEncoder }
-import java.util.{ Locale, GregorianCalendar }
-
-import android.app.Activity
+import org.jsoup._
 
 import scala.concurrent.{ ExecutionContext, Future }
-import scala.io.Source
-import scala.xml.XML
-
-import spray.json._
+import scala.collection.JavaConversions._
 
 case class Schedule(
-    line: String,
-    destination: String,
-    plannedArrival: GregorianCalendar,
-    actualArrival: GregorianCalendar) extends Ordered[Schedule] {
-  override def compare(other: Schedule): Int = {
-    plannedArrival.compareTo(other.plannedArrival)
-  }
-}
+  line: String,
+  destination: String,
+  time: String)
 
 object Schedule {
-  def fetch(stationName: String)(implicit ec: ExecutionContext, activity: Activity): Future[Seq[Schedule]] = Future {
-    val db = new DatabaseHelper(activity)
-    val station = db.stations.filter { _.name == stationName }.toSeq.head
-    station.stopPoints flatMap { stopPoint: String ⇒
-      val url = new URL("http://fpl.jenah.de/bontip-ifgi/php/proxy.php?vsz=60&azbid=" + stopPoint)
-      val scheduleXml = XML.load(new java.io.InputStreamReader(url.openConnection.getInputStream, "ISO-8859-1"))
-      scheduleXml \\ "AZBFahrplanlage" map { stop ⇒
-        def parseTime(str: String): GregorianCalendar = {
-          val fields = str.split("[\\-T:]") map {
-            _.toInt
-          }
-          new GregorianCalendar(fields(0), fields(1), fields(2), fields(3), fields(4), fields(5))
-        }
-        Schedule(
-          (stop \\ "LinienText").text,
-          (stop \\ "RichtungsText").text,
-          parseTime((stop \\ "AnkunftszeitAZBPlan").text),
-          parseTime((stop \\ "AnkunftszeitAZBPrognose").text)
-        )
-      }
+  def fetch(stationName: String)(implicit ec: ExecutionContext): Future[Seq[Schedule]] = Future {
+    val html = Jsoup.connect("http://www.nahverkehr-jena.de/fahrplan/haltestellenmonitor.html")
+      .data("tx_akteasygojenah_stopsmonitor[__referrer][@extension]", "AktEasygoJenah")
+      .data("tx_akteasygojenah_stopsmonitor[__referrer][@vendor]", "AKT")
+      .data("tx_akteasygojenah_stopsmonitor[__referrer][@controller]", "Stopsmonitor")
+      .data("tx_akteasygojenah_stopsmonitor[__referrer][@action]", "form")
+      .data("tx_akteasygojenah_stopsmonitor[__referrer][arguments]", "YTowOnt99edb37317ce2146cbb36d8cfdd8a13d5bdaa1401")
+      .data("tx_akteasygojenah_stopsmonitor[__trustedProperties]", "a:2:{s:8:\"stopName\";i:1;s:12:\"selectedStop\";i:1;}4e8bc1e643111a77d8aa363a030a699651803489")
+      .data("tx_akteasygojenah_stopsmonitor[selectedStop]", "")
+      .data("tx_akteasygojenah_stopsmonitor[stopName]", stationName)
+      .timeout(10000)
+      .post()
+
+    html.getElementById("monitoringResult").select("tbody tr").toList map { element ⇒
+      val cols = element.select("td").toList
+      val line = cols(0).child(0).html
+      val destination = cols(1).html
+      val time = cols(2).html
+      Schedule(line, destination, time)
     }
   }
 }

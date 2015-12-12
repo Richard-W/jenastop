@@ -31,32 +31,10 @@ class ScheduleAdapter(activity: ScheduleActivity, val list: java.util.List[Sched
     val schedule: Schedule = list.get(position)
     view.findViewById(R.id.listitem_schedule_line).asInstanceOf[TextView].setText(schedule.line)
     view.findViewById(R.id.listitem_schedule_destination).asInstanceOf[TextView].setText(
-      if (schedule.destination.length > 20) schedule.destination.substring(0, 20) + "…" else schedule.destination
+      if (schedule.destination.length > 18) schedule.destination.substring(0, 18) + "…" else schedule.destination
     )
-
-    def cal2str(cal: GregorianCalendar): String = {
-      val hour = cal.get(Calendar.HOUR_OF_DAY)
-      val minute = cal.get(Calendar.MINUTE)
-      val hour_s = if (hour < 10) {
-        "0" + hour.toString
-      } else {
-        hour.toString
-      }
-      val minute_s = if (minute < 10) {
-        "0" + minute.toString
-      } else {
-        minute.toString
-      }
-      hour_s + ":" + minute_s
-    }
-    view.findViewById(R.id.listitem_schedule_actual).asInstanceOf[TextView].setText(cal2str(schedule.actualArrival))
-    view.findViewById(R.id.listitem_schedule_planned).asInstanceOf[TextView].setText(cal2str(schedule.plannedArrival))
+    view.findViewById(R.id.listitem_schedule_time).asInstanceOf[TextView].setText(schedule.time)
 
     view
-  }
-
-  override def notifyDataSetChanged(): Unit = {
-    Collections.sort(list)
-    super.notifyDataSetChanged()
   }
 }
