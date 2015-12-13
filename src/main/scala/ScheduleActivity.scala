@@ -30,7 +30,7 @@ class ScheduleActivity extends Activity {
   implicit val activity = this
 
   override def onCreateOptionsMenu(menu: Menu): Boolean = {
-    getMenuInflater.inflate(R.menu.menu_schedule, menu)
+    getMenuInflater.inflate(R.menu.activity_menu, menu)
     return true
   }
 
