@@ -43,7 +43,7 @@ object Schedule {
       val cols = element.select("td").toList
       val line = cols(0).child(0).html
       val destination = cols(1).html
-      val time = cols(2).html
+      val time = cols(2).html.split("<br>")(0)
       Schedule(line, destination, time)
     }
   }
