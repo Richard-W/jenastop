@@ -25,7 +25,7 @@ import scala.concurrent.{ ExecutionContext, Future }
 
 class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, DatabaseHelper.DATABASE_NAME, null, DatabaseHelper.DATABASE_VERSION) {
   def onCreate(db: SQLiteDatabase) = {
-    db.execSQL("CREATE TABLE `stations` (`name` TEXT PRIMARY KEY, `favorite` INT, `stoppoints` TEXT)")
+    db.execSQL("CREATE TABLE `stations` (`name` TEXT PRIMARY KEY, `favorite` INT)")
     db.execSQL("CREATE TABLE `flags` (`name` TEXT PRIMARY KEY, `value` INT)")
     db.execSQL("INSERT INTO `flags` (`name`, `value`) VALUES ('needStationsUpdate', '1')")
   }
@@ -71,6 +71,35 @@ class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, Databas
       db.execSQL("CREATE TABLE `flags` (`name` TEXT PRIMARY KEY, `value` INT)")
       db.execSQL("INSERT INTO `flags` (`name`, `value`) VALUES ('needStationsUpdate', '1')")
     }
+
+    if (oldVersion < 5 && newVersion >= 5) {
+      // Remove stopnos
+      db.beginTransaction()
+      try {
+        db.execSQL("ALTER TABLE `stations` RENAME TO `tmp`")
+        db.execSQL("CREATE TABLE `stations` (`name` TEXT PRIMARY KEY, `favorite` INT)")
+        val cursor = db.rawQuery("SELECT `name`, `favorite` FROM `tmp`", Array())
+        cursor.moveToFirst()
+        @tailrec
+        def helper(): Unit = {
+          if (cursor.isAfterLast) {}
+          else {
+            val name = cursor.getString(0)
+            val fav = cursor.getInt(1).toString
+            db.execSQL("INSERT INTO `stations` (`name`, `favorite`) VALUES (?, ?)", Array(name, fav))
+            cursor.moveToNext()
+            helper()
+          }
+        }
+        helper()
+        db.execSQL("DROP TABLE `tmp`")
+        db.setTransactionSuccessful()
+      } catch {
+        case t: Throwable ⇒ Log.e("Jenastop", "Database upgrade failed", t)
+      } finally {
+        db.endTransaction()
+      }
+    }
   }
 
   def flag(name: String): Boolean = {
@@ -94,10 +123,8 @@ class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, Databas
       else {
         val name = cursor.getString(0)
         val favorite = cursor.getInt(1) != 0
-        val stopPointsStr = cursor.getString(2)
-        val stopPoints = if (stopPointsStr != null) stopPointsStr.split(",").toSeq filter { _.length > 0 } else Seq()
         cursor.moveToNext()
-        helper(cursor, set + Station(name, stopPoints, favorite))
+        helper(cursor, set + Station(name, favorite))
       }
     }
     cursor.moveToFirst()
@@ -106,14 +133,13 @@ class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, Databas
 
   def updateStations()(implicit ec: ExecutionContext): Future[Unit] = {
     val favs: Set[String] = this.stations filter { _.favorite } map { _.name }
-    Station.fetchStations map { stationTuples ⇒
+    Station.fetchStations map { stationNames ⇒
       val db = this.getWritableDatabase
       db.beginTransaction()
       try {
         db.execSQL("DELETE FROM `stations`")
-        for ((name, stopPoints) <- stationTuples) {
-          val spStr = stopPoints.tail.fold(stopPoints.head) { case (a, b) ⇒ a + "," + b }
-          db.execSQL("INSERT INTO `stations` (`name`, `favorite`, `stoppoints`) VALUES (?, ?, ?)", Array(name, if (favs.contains(name)) "1" else "0", spStr))
+        for (name <- stationNames) {
+          db.execSQL("INSERT INTO `stations` (`name`, `favorite`) VALUES (?, ?)", Array(name, if (favs.contains(name)) "1" else "0"))
         }
         db.setTransactionSuccessful()
       } catch {
@@ -140,6 +166,6 @@ class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, Databas
 }
 
 object DatabaseHelper {
-  private val DATABASE_VERSION: Int = 4
+  private val DATABASE_VERSION: Int = 5
   private val DATABASE_NAME: String = "jenastop_storage"
 }
