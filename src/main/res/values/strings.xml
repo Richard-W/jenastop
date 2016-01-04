@@ -7,4 +7,5 @@
     <string name="listitem_station_fav">Favorite</string>
     <string name="title_activity_schedule">Next stops</string>
     <string name="action_refresh">Refresh</string>
+    <string name="no_stops">There are no stops planned for this station in the next hour.</string>
 </resources>

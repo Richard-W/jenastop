@@ -8,4 +8,5 @@
     <string name="retry">Nochmal versuchen</string>
     <string name="title_activity_main">Jenastop</string>
     <string name="title_activity_schedule">Fahrplan</string>
+    <string name="no_stops">Für diese Haltestelle sind in der nächsten Stunde keine Abfahrten geplant.</string>
 </resources>

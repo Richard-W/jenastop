@@ -50,9 +50,16 @@ class ScheduleActivity extends Activity {
   def fetchSchedule = {
     implicit val ec: ExecutionContext = ExecutionContext.fromExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
     Schedule.fetch(station) mapUI { schedules ⇒
-      listAdapter.addAll(schedules)
-      listAdapter.notifyDataSetChanged()
-      progressBar.setVisibility(View.GONE)
+      if (schedules.isEmpty) {
+        errorDescription.setVisibility(View.VISIBLE)
+        retryButton.setVisibility(View.VISIBLE)
+        progressBar.setVisibility(View.GONE)
+        errorDescription.setText(R.string.no_stops)
+      } else {
+        listAdapter.addAll(schedules)
+        listAdapter.notifyDataSetChanged()
+        progressBar.setVisibility(View.GONE)
+      }
     } recoverUI {
       case t: Throwable ⇒
         progressBar.setVisibility(View.GONE)
