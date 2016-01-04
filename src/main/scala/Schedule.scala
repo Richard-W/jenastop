@@ -39,12 +39,17 @@ object Schedule {
       .timeout(10000)
       .post()
 
-    html.getElementById("monitoringResult").select("tbody tr").toList map { element ⇒
-      val cols = element.select("td").toList
-      val line = cols(0).child(0).html
-      val destination = cols(1).html
-      val time = cols(2).html.split("<br>")(0)
-      Schedule(line, destination, time)
+    val monitoringResult = html.getElementById("monitoringResult")
+    if (monitoringResult != null) {
+      monitoringResult.select("tbody tr").toList map { element ⇒
+        val cols = element.select("td").toList
+        val line = cols(0).child(0).html
+        val destination = cols(1).html
+        val time = cols(2).html.split("<br>")(0)
+        Schedule(line, destination, time)
+      }
+    } else {
+      Seq.empty
     }
   }
 }
