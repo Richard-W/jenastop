@@ -15,17 +15,38 @@
  */
 package net.metanoise.android.jenastop
 
+import android.os.Parcelable.Creator
+import android.os.{ Parcel, Parcelable }
 import org.jsoup._
 
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.collection.JavaConversions._
 
 case class Schedule(
-  line: String,
-  destination: String,
-  time: String)
+    line: String,
+    destination: String,
+    time: String) extends Parcelable {
+  override def writeToParcel(dest: Parcel, flags: Int): Unit = {
+    dest.writeString(line)
+    dest.writeString(destination)
+    dest.writeString(time)
+  }
+
+  override def describeContents(): Int = 0
+}
 
 object Schedule {
+  val CREATOR = new Creator[Schedule] {
+
+    override def newArray(size: Int): Array[Schedule] = new Array(size)
+
+    override def createFromParcel(source: Parcel): Schedule = Schedule(
+      source.readString,
+      source.readString,
+      source.readString
+    )
+  }
+
   def fetch(stationName: String)(implicit ec: ExecutionContext): Future[Seq[Schedule]] = Future {
     val html = Jsoup.connect("http://www.nahverkehr-jena.de/fahrplan/haltestellenmonitor.html")
       .data("tx_akteasygojenah_stopsmonitor[__referrer][@extension]", "AktEasygoJenah")

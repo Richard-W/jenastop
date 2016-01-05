@@ -46,10 +46,14 @@ class ScheduleActivity extends Activity {
 
   override def onSaveInstanceState(bundle: Bundle): Unit = {
     bundle.putInt("sorting", sorting)
+    bundle.putParcelableArray("schedules", originallyOrdered.toArray)
   }
 
   override def onRestoreInstanceState(bundle: Bundle): Unit = {
+    progressBar.setVisibility(View.GONE)
     sorting = bundle.getInt("sorting")
+    originallyOrdered = bundle.getParcelableArray("schedules").toSeq map { _.asInstanceOf[Schedule] }
+    displayList()
   }
 
   def displayList(): Unit = {
