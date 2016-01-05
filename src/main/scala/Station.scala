@@ -33,13 +33,7 @@ case class Station(
   }
 
   def compare(other: Station): Int = {
-    if (this.favorite && !other.favorite) {
-      -1
-    } else if (!this.favorite && other.favorite) {
-      1
-    } else {
-      name.compare(other.name)
-    }
+    name.compare(other.name)
   }
 }
 

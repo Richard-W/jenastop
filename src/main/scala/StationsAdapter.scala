@@ -43,7 +43,9 @@ class StationsAdapter(activity: Activity, val list: java.util.List[Station]) ext
     )
     favStar.setOnClickListener(new OnClickListener {
       override def onClick(v: View): Unit = {
-        StationsAdapter.this.list.remove(station)
+        while (StationsAdapter.this.list.contains(station)) {
+          StationsAdapter.this.list.remove(station)
+        }
         StationsAdapter.this.list.add(station.setFavorite(!station.favorite))
         StationsAdapter.this.notifyDataSetChanged()
       }
@@ -61,22 +63,32 @@ class StationsAdapter(activity: Activity, val list: java.util.List[Station]) ext
   }
 
   override def notifyDataSetChanged(): Unit = {
+    // Remove duplicate stations
+    val intermediate = list.distinct
+    list.clear()
+    list.addAll(intermediate)
+
+    // Sort stations by name
     Collections.sort(list)
-    sections = ("★" +: (list filter { !_.favorite } map { _.name.charAt(0).toUpper.toString }).distinct).toArray
+
+    val favorites = list filter { _.favorite }
+
+    // Create list of all sections
+    val alphaSections = (list map { _.name.charAt(0).toUpper.toString.asInstanceOf[AnyRef] }).distinct.toArray
+    sections = if (favorites.nonEmpty) "★" +: alphaSections else alphaSections
+
+    // Calculate the position of the first element of every section
     positionForSection = sections map { section ⇒
-      if (section == "★") {
-        0
-      } else {
-        list.indexOf(list.filter { _.name.charAt(0).toString == section }.head)
-      }
+      if (section == "★") 0
+      else list.indexOf(list.filter { _.name.charAt(0).toString == section }.head) + favorites.length
     }
-    sectionForPosition = list map { item ⇒
-      if (item.favorite) {
-        0
-      } else {
-        sections.indexOf(sections.filter { _.asInstanceOf[String] == item.name.charAt(0).toUpper.toString }.head)
-      }
-    }
+
+    // Calculate the section for every given position
+    sectionForPosition = Seq.fill(favorites.length) { 0 } ++ (list map { item ⇒
+      sections.indexOf(sections.filter { _.asInstanceOf[String] == item.name.charAt(0).toUpper.toString }.head)
+    })
+
+    list.prependAll(favorites)
     super.notifyDataSetChanged()
   }
 
