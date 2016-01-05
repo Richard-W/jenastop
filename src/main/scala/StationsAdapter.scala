@@ -15,15 +15,17 @@
  */
 package net.metanoise.android.jenastop
 
+import scala.collection.JavaConversions._
+
 import java.util.Collections
 
 import android.app.Activity
 import android.content.Intent
 import android.view.View.OnClickListener
 import android.view.{ View, ViewGroup }
-import android.widget.{ ArrayAdapter, ImageView, TextView }
+import android.widget.{ SectionIndexer, ArrayAdapter, ImageView, TextView }
 
-class StationsAdapter(activity: Activity, val list: java.util.List[Station]) extends ArrayAdapter[Station](activity, R.layout.listitem_station, list) {
+class StationsAdapter(activity: Activity, val list: java.util.List[Station]) extends ArrayAdapter[Station](activity, R.layout.listitem_station, list) with SectionIndexer {
   implicit val db = new DatabaseHelper(activity)
 
   override def getView(position: Int, convertView: View, parent: ViewGroup) = {
@@ -60,6 +62,37 @@ class StationsAdapter(activity: Activity, val list: java.util.List[Station]) ext
 
   override def notifyDataSetChanged(): Unit = {
     Collections.sort(list)
+    sections = ("★" +: (list filter { !_.favorite } map { _.name.charAt(0).toUpper.toString }).distinct).toArray
+    positionForSection = sections map { section ⇒
+      if (section == "★") {
+        0
+      } else {
+        list.indexOf(list.filter { _.name.charAt(0).toString == section }.head)
+      }
+    }
+    sectionForPosition = list map { item ⇒
+      if (item.favorite) {
+        0
+      } else {
+        sections.indexOf(sections.filter { _.asInstanceOf[String] == item.name.charAt(0).toUpper.toString }.head)
+      }
+    }
     super.notifyDataSetChanged()
+  }
+
+  var sections: Array[AnyRef] = Array()
+  var positionForSection: Seq[Int] = Seq()
+  var sectionForPosition: Seq[Int] = Seq()
+
+  override def getPositionForSection(sectionIndex: Int): Int = {
+    positionForSection(sectionIndex)
+  }
+
+  override def getSections: Array[AnyRef] = {
+    sections
+  }
+
+  override def getSectionForPosition(position: Int): Int = {
+    sectionForPosition(position)
   }
 }
