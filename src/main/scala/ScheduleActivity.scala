@@ -33,7 +33,7 @@ class ScheduleActivity extends Activity {
 
   override def onCreateOptionsMenu(menu: Menu): Boolean = {
     getMenuInflater.inflate(R.menu.menu_schedule, menu)
-    return true
+    true
   }
 
   override def onSaveInstanceState(bundle: Bundle): Unit = {
