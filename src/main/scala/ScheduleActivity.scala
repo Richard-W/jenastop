@@ -34,10 +34,10 @@ class ScheduleActivity extends Activity {
   var originallyOrdered: Seq[Schedule] = Seq()
   var sorting: Int = R.id.sort_by_time
 
-  // Reload schedule every 10 seconds
+  // Reload schedule every 30 seconds
   new Timer().scheduleAtFixedRate(new TimerTask {
     override def run(): Unit = fetchSchedule
-  }, 10000, 10000)
+  }, 30000, 30000)
 
   override def onCreateOptionsMenu(menu: Menu): Boolean = {
     getMenuInflater.inflate(R.menu.menu_schedule, menu)
