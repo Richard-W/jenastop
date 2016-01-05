@@ -29,29 +29,47 @@ class ScheduleActivity extends Activity {
   var listAdapter: ScheduleAdapter = null
   implicit val activity = this
   var originallyOrdered: Seq[Schedule] = Seq()
+  var sorting: Int = R.id.sort_by_time
 
   override def onCreateOptionsMenu(menu: Menu): Boolean = {
     getMenuInflater.inflate(R.menu.menu_schedule, menu)
     return true
   }
 
+  override def onSaveInstanceState(bundle: Bundle): Unit = {
+    bundle.putInt("sorting", sorting)
+  }
+
+  override def onRestoreInstanceState(bundle: Bundle): Unit = {
+    sorting = bundle.getInt("sorting")
+  }
+
+  def displayList(): Unit = {
+    val sorted = sorting match {
+      case R.id.sort_by_dest ⇒ originallyOrdered.sortBy { _.destination }
+      case R.id.sort_by_line ⇒ originallyOrdered.sortBy { _.line }
+      case R.id.sort_by_time ⇒ originallyOrdered
+    }
+    listAdapter.list.clear()
+    listAdapter.list.addAll(sorted)
+    listAdapter.notifyDataSetChanged()
+  }
+
+  def clearList(): Unit = {
+    listAdapter.list.clear()
+    listAdapter.notifyDataSetChanged()
+  }
+
   override def onOptionsItemSelected(item: MenuItem): Boolean = {
     item.getItemId match {
       case R.id.action_refresh =>
-        listAdapter.list.clear()
-        listAdapter.notifyDataSetChanged()
+        clearList()
         progressBar.setVisibility(View.VISIBLE)
         fetchSchedule
         true
       case R.id.sort_by_dest | R.id.sort_by_line | R.id.sort_by_time ⇒
-        val sorted = item.getItemId match {
-          case R.id.sort_by_dest ⇒ originallyOrdered.sortBy { _.destination }
-          case R.id.sort_by_line ⇒ originallyOrdered.sortBy { _.line }
-          case R.id.sort_by_time ⇒ originallyOrdered
-        }
-        listAdapter.list.clear()
-        listAdapter.list.addAll(sorted)
-        listAdapter.notifyDataSetChanged()
+        sorting = item.getItemId
+        displayList()
         true
       case _ ⇒
         super.onOptionsItemSelected(item)
@@ -68,8 +86,7 @@ class ScheduleActivity extends Activity {
         progressBar.setVisibility(View.GONE)
         errorDescription.setText(R.string.no_stops)
       } else {
-        listAdapter.addAll(schedules)
-        listAdapter.notifyDataSetChanged()
+        displayList()
         progressBar.setVisibility(View.GONE)
       }
     } recoverUI {
@@ -100,8 +117,7 @@ class ScheduleActivity extends Activity {
     failedText.setVisibility(View.GONE)
     retryButton.setVisibility(View.GONE)
     errorDescription.setVisibility(View.GONE)
-    listAdapter.list.clear()
-    listAdapter.notifyDataSetChanged()
+    clearList()
     fetchSchedule
   }
 
