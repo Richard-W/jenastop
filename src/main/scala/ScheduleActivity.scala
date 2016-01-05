@@ -15,6 +15,9 @@
  */
 package net.metanoise.android.jenastop
 
+import java.util.Timer
+import java.util.TimerTask
+
 import android.app.Activity
 import android.os.{ AsyncTask, Bundle }
 import android.view.{ Menu, MenuItem, View }
@@ -30,6 +33,11 @@ class ScheduleActivity extends Activity {
   implicit val activity = this
   var originallyOrdered: Seq[Schedule] = Seq()
   var sorting: Int = R.id.sort_by_time
+
+  // Reload schedule every 10 seconds
+  new Timer().scheduleAtFixedRate(new TimerTask {
+    override def run(): Unit = fetchSchedule
+  }, 10000, 10000)
 
   override def onCreateOptionsMenu(menu: Menu): Boolean = {
     getMenuInflater.inflate(R.menu.menu_schedule, menu)
