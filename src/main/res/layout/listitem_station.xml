@@ -19,8 +19,7 @@
         android:layout_marginStart="16dp"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@+id/listitem_station_fav"
-        android:layout_toEndOf="@+id/listitem_station_fav"/>
-
-
+        android:layout_toEndOf="@+id/listitem_station_fav"
+        android:layout_marginBottom="12dp"/>
 
 </RelativeLayout>
