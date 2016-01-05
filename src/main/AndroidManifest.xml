@@ -3,6 +3,10 @@
     package="net.metanoise.android.jenastop"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-sdk
+        android:minSdkVersion="15"
+        android:targetSdkVersion="23" />
+
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
