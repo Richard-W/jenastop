@@ -28,9 +28,10 @@ class ScheduleActivity extends Activity {
   var station: String = null
   var listAdapter: ScheduleAdapter = null
   implicit val activity = this
+  var originallyOrdered: Seq[Schedule] = Seq()
 
   override def onCreateOptionsMenu(menu: Menu): Boolean = {
-    getMenuInflater.inflate(R.menu.activity_menu, menu)
+    getMenuInflater.inflate(R.menu.menu_schedule, menu)
     return true
   }
 
@@ -42,7 +43,17 @@ class ScheduleActivity extends Activity {
         progressBar.setVisibility(View.VISIBLE)
         fetchSchedule
         true
-      case _ =>
+      case R.id.sort_by_dest | R.id.sort_by_line | R.id.sort_by_time ⇒
+        val sorted = item.getItemId match {
+          case R.id.sort_by_dest ⇒ originallyOrdered.sortBy { _.destination }
+          case R.id.sort_by_line ⇒ originallyOrdered.sortBy { _.line }
+          case R.id.sort_by_time ⇒ originallyOrdered
+        }
+        listAdapter.list.clear()
+        listAdapter.list.addAll(sorted)
+        listAdapter.notifyDataSetChanged()
+        true
+      case _ ⇒
         super.onOptionsItemSelected(item)
     }
   }
@@ -50,6 +61,7 @@ class ScheduleActivity extends Activity {
   def fetchSchedule = {
     implicit val ec: ExecutionContext = ExecutionContext.fromExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
     Schedule.fetch(station) mapUI { schedules ⇒
+      originallyOrdered = schedules
       if (schedules.isEmpty) {
         errorDescription.setVisibility(View.VISIBLE)
         retryButton.setVisibility(View.VISIBLE)
@@ -62,6 +74,7 @@ class ScheduleActivity extends Activity {
       }
     } recoverUI {
       case t: Throwable ⇒
+        originallyOrdered = Seq()
         progressBar.setVisibility(View.GONE)
         listView.setVisibility(View.GONE)
         failedText.setVisibility(View.VISIBLE)

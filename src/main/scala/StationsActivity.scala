@@ -29,7 +29,7 @@ class StationsActivity extends Activity {
   implicit val activity = this
 
   override def onCreateOptionsMenu(menu: Menu): Boolean = {
-    getMenuInflater.inflate(R.menu.activity_menu, menu)
+    getMenuInflater.inflate(R.menu.menu_stations, menu)
     true
   }
 

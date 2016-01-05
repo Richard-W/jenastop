@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_sort"
+        android:icon="@drawable/ic_sort_white"
+        android:title="@string/sort"
+        android:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:id="@+id/sort_by_time"
+                android:title="@string/sort_by_time" />
+            <item
+                android:id="@+id/sort_by_dest"
+                android:title="@string/sort_by_dest" />
+            <item
+                android:id="@+id/sort_by_line"
+                android:title="@string/sort_by_line" />
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/action_refresh"
+        android:icon="@drawable/ic_refresh_white"
+        android:title="@string/action_refresh"
+        android:showAsAction="ifRoom" />
+
+</menu>

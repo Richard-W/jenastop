@@ -9,4 +9,8 @@
     <string name="title_activity_main">Jenastop</string>
     <string name="title_activity_schedule">Fahrplan</string>
     <string name="no_stops">Für diese Haltestelle sind in der nächsten Stunde keine Abfahrten geplant.</string>
+    <string name="sort">Sortieren</string>
+    <string name="sort_by_dest">Nach Ziel sortieren</string>
+    <string name="sort_by_line">Nach Linie sortieren</string>
+    <string name="sort_by_time">Nach Zeit sortieren</string>
 </resources>
