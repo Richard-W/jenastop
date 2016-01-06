@@ -20,6 +20,7 @@ import java.util.TimerTask
 
 import android.app.Activity
 import android.os.{ AsyncTask, Bundle }
+import android.util.Log
 import android.view.{ Menu, MenuItem, View }
 import android.widget.{ Button, ListView, ProgressBar, TextView }
 
@@ -30,27 +31,70 @@ class ScheduleActivity extends Activity {
 
   var station: String = null
   var listAdapter: ScheduleAdapter = null
-  implicit val activity = this
-  var originallyOrdered: Seq[Schedule] = Seq()
-  var sorting: Int = R.id.sort_by_time
+  var originallyOrdered: Seq[Schedule] = null
+  var sorting: Int = 0
+  var timer: Timer = null
 
-  // Reload schedule every 30 seconds
-  new Timer().scheduleAtFixedRate(new TimerTask {
-    override def run(): Unit = fetchSchedule
-  }, 30000, 30000)
+  implicit val activity = this
+
+  protected override def onCreate(savedInstanceState: Bundle) {
+    // Create UI
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.activity_schedule)
+    getActionBar.setDisplayUseLogoEnabled(true)
+    getActionBar.setDisplayShowHomeEnabled(true)
+
+    // Get station from intent
+    val intent = getIntent
+    station = intent.getStringExtra("station")
+    getActionBar.setSubtitle(station)
+
+    // Setup ListView
+    listAdapter = new ScheduleAdapter(this, new java.util.ArrayList[Schedule])
+    listView.setAdapter(listAdapter)
+    listView.setClickable(false)
+
+    // Initialize other fields
+    originallyOrdered = Seq()
+    sorting = R.id.sort_by_time
+  }
+
+  protected override def onResume(): Unit = {
+    super.onResume()
+
+    Log.w("Jenastop", "Resume started")
+
+    // Setup timer that refreshes the data every 30
+    // seconds.
+    timer = new Timer
+    timer.scheduleAtFixedRate(new TimerTask {
+      override def run(): Unit = fetchSchedule()
+    }, 0, 30000)
+
+    Log.w("Jenastop", "Resume finished")
+  }
+
+  protected override def onPause(): Unit = {
+    super.onPause()
+
+    // Cancel periodic data refresh
+    timer.cancel()
+  }
 
   override def onCreateOptionsMenu(menu: Menu): Boolean = {
+    super.onCreateOptionsMenu(menu)
     getMenuInflater.inflate(R.menu.menu_schedule, menu)
     true
   }
 
   override def onSaveInstanceState(bundle: Bundle): Unit = {
+    super.onSaveInstanceState(bundle)
     bundle.putInt("sorting", sorting)
     bundle.putParcelableArray("schedules", originallyOrdered.toArray)
   }
 
   override def onRestoreInstanceState(bundle: Bundle): Unit = {
-    progressBar.setVisibility(View.GONE)
+    super.onRestoreInstanceState(bundle)
     sorting = bundle.getInt("sorting")
     originallyOrdered = bundle.getParcelableArray("schedules").toSeq map { _.asInstanceOf[Schedule] }
     displayList()
@@ -77,7 +121,7 @@ class ScheduleActivity extends Activity {
       case R.id.action_refresh =>
         clearList()
         progressBar.setVisibility(View.VISIBLE)
-        fetchSchedule
+        fetchSchedule()
         true
       case R.id.sort_by_dest | R.id.sort_by_line | R.id.sort_by_time ⇒
         sorting = item.getItemId
@@ -88,18 +132,24 @@ class ScheduleActivity extends Activity {
     }
   }
 
-  def fetchSchedule = {
+  def fetchSchedule(): Unit = {
     implicit val ec: ExecutionContext = ExecutionContext.fromExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+
+    if (originallyOrdered.isEmpty) {
+      // No data available from previous fetches ⇒ display progress bar
+      progressBar.setVisibility(View.VISIBLE)
+    }
+
     Schedule.fetch(station) mapUI { schedules ⇒
+      Log.w("Jenastop", "Schedules are fetched")
       originallyOrdered = schedules
+      progressBar.setVisibility(View.GONE)
       if (schedules.isEmpty) {
         errorDescription.setVisibility(View.VISIBLE)
         retryButton.setVisibility(View.VISIBLE)
-        progressBar.setVisibility(View.GONE)
         errorDescription.setText(R.string.no_stops)
       } else {
         displayList()
-        progressBar.setVisibility(View.GONE)
       }
     } recoverUI {
       case t: Throwable ⇒
@@ -130,23 +180,7 @@ class ScheduleActivity extends Activity {
     retryButton.setVisibility(View.GONE)
     errorDescription.setVisibility(View.GONE)
     clearList()
-    fetchSchedule
+    fetchSchedule()
   }
 
-  protected override def onCreate(savedInstanceState: Bundle) {
-    super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_schedule)
-    getActionBar.setDisplayUseLogoEnabled(true)
-    getActionBar.setDisplayShowHomeEnabled(true)
-
-    val intent = getIntent
-    station = intent.getStringExtra("station")
-    getActionBar.setSubtitle(station)
-
-    listAdapter = new ScheduleAdapter(this, new java.util.ArrayList[Schedule])
-    listView.setAdapter(listAdapter)
-    listView.setClickable(false)
-
-    fetchSchedule
-  }
 }
