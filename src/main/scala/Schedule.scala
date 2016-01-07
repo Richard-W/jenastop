@@ -57,7 +57,7 @@ object Schedule {
       .data("tx_akteasygojenah_stopsmonitor[__trustedProperties]", "a:2:{s:8:\"stopName\";i:1;s:12:\"selectedStop\";i:1;}4e8bc1e643111a77d8aa363a030a699651803489")
       .data("tx_akteasygojenah_stopsmonitor[selectedStop]", "")
       .data("tx_akteasygojenah_stopsmonitor[stopName]", stationName)
-      .timeout(10000)
+      .timeout(60000)
       .post()
 
     val monitoringResult = html.getElementById("monitoringResult")
