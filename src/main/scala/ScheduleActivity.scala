@@ -20,7 +20,6 @@ import java.util.TimerTask
 
 import android.app.Activity
 import android.os.{ AsyncTask, Bundle }
-import android.util.Log
 import android.view.{ Menu, MenuItem, View }
 import android.widget.{ Button, ListView, ProgressBar, TextView }
 
@@ -62,16 +61,12 @@ class ScheduleActivity extends Activity {
   protected override def onResume(): Unit = {
     super.onResume()
 
-    Log.w("Jenastop", "Resume started")
-
     // Setup timer that refreshes the data every 30
     // seconds.
     timer = new Timer
     timer.scheduleAtFixedRate(new TimerTask {
       override def run(): Unit = fetchSchedule()
     }, 0, 30000)
-
-    Log.w("Jenastop", "Resume finished")
   }
 
   protected override def onPause(): Unit = {
@@ -141,7 +136,6 @@ class ScheduleActivity extends Activity {
     }
 
     Schedule.fetch(station) mapUI { schedules ⇒
-      Log.w("Jenastop", "Schedules are fetched")
       originallyOrdered = schedules
       progressBar.setVisibility(View.GONE)
       if (schedules.isEmpty) {
