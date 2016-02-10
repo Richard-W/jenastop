@@ -23,11 +23,11 @@ import scala.concurrent.{ ExecutionContext, Future }
 import scala.collection.JavaConversions._
 
 case class Schedule(
-    line: String,
+    line: Int,
     destination: String,
     time: String) extends Parcelable {
   override def writeToParcel(dest: Parcel, flags: Int): Unit = {
-    dest.writeString(line)
+    dest.writeInt(line)
     dest.writeString(destination)
     dest.writeString(time)
   }
@@ -41,7 +41,7 @@ object Schedule {
     override def newArray(size: Int): Array[Schedule] = new Array(size)
 
     override def createFromParcel(source: Parcel): Schedule = Schedule(
-      source.readString,
+      source.readInt,
       source.readString,
       source.readString
     )
@@ -64,7 +64,7 @@ object Schedule {
     if (monitoringResult != null) {
       monitoringResult.select("tbody tr").toList map { element ⇒
         val cols = element.select("td").toList
-        val line = cols(0).child(0).html
+        val line = cols(0).child(0).html.toInt
         val destination = cols(1).html
         val time = cols(2).html.split("<br>")(0)
         Schedule(line, destination, time)
