@@ -39,7 +39,7 @@ class StationsAdapter(activity: Activity, val list: java.util.List[Station]) ext
     view.findViewById(R.id.listitem_station_name).asInstanceOf[TextView].setText(station.name)
     val favStar = view.findViewById(R.id.listitem_station_fav).asInstanceOf[ImageView]
     favStar.setImageResource(
-      if (station.favorite) android.R.drawable.btn_star_big_on else android.R.drawable.btn_star_big_off
+      if (station.favorite) R.drawable.ic_favorite_white else R.drawable.ic_favorite_border_white
     )
     favStar.setOnClickListener(new OnClickListener {
       override def onClick(v: View): Unit = {
@@ -75,11 +75,11 @@ class StationsAdapter(activity: Activity, val list: java.util.List[Station]) ext
 
     // Create list of all sections
     val alphaSections = (list map { _.name.charAt(0).toUpper.toString.asInstanceOf[AnyRef] }).distinct.toArray
-    sections = if (favorites.nonEmpty) "★" +: alphaSections else alphaSections
+    sections = if (favorites.nonEmpty) "♥" +: alphaSections else alphaSections
 
     // Calculate the position of the first element of every section
     positionForSection = sections map { section ⇒
-      if (section == "★") 0
+      if (section == "♥") 0
       else list.indexOf(list.filter { _.name.charAt(0).toString == section }.head) + favorites.length
     }
 
