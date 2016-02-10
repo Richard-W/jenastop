@@ -18,15 +18,15 @@ package net.metanoise.android.jenastop
 import java.util.Timer
 import java.util.TimerTask
 
-import android.app.Activity
 import android.os.{ AsyncTask, Bundle }
+import android.support.v7.app.AppCompatActivity
 import android.view.{ Menu, MenuItem, View }
 import android.widget.{ Button, ListView, ProgressBar, TextView }
 
 import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContext
 
-class ScheduleActivity extends Activity {
+class ScheduleActivity extends AppCompatActivity {
 
   var station: String = null
   var listAdapter: ScheduleAdapter = null
@@ -40,13 +40,14 @@ class ScheduleActivity extends Activity {
     // Create UI
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_schedule)
-    getActionBar.setDisplayUseLogoEnabled(true)
-    getActionBar.setDisplayShowHomeEnabled(true)
+    getSupportActionBar.setDisplayUseLogoEnabled(true)
+    getSupportActionBar.setIcon(R.mipmap.ic_launcher)
+    getSupportActionBar.setDisplayShowHomeEnabled(true)
 
     // Get station from intent
     val intent = getIntent
     station = intent.getStringExtra("station")
-    getActionBar.setSubtitle(station)
+    getSupportActionBar.setSubtitle(station)
 
     // Setup ListView
     listAdapter = new ScheduleAdapter(this, new java.util.ArrayList[Schedule])

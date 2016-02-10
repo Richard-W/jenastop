@@ -15,15 +15,15 @@
  */
 package net.metanoise.android.jenastop
 
-import android.app.Activity
 import android.os.{ AsyncTask, Bundle }
+import android.support.v7.app.AppCompatActivity
 import android.view.{ MenuItem, Menu, View }
 import android.widget.{ Button, ListView, ProgressBar, TextView }
 
 import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContext
 
-class StationsActivity extends Activity {
+class StationsActivity extends AppCompatActivity {
 
   var listAdapter: StationsAdapter = null
   implicit val activity = this
@@ -46,8 +46,9 @@ class StationsActivity extends Activity {
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_stations)
-    getActionBar.setDisplayUseLogoEnabled(true)
-    getActionBar.setDisplayShowHomeEnabled(true)
+    getSupportActionBar.setDisplayUseLogoEnabled(true)
+    getSupportActionBar.setIcon(R.mipmap.ic_launcher)
+    getSupportActionBar.setDisplayShowHomeEnabled(true)
 
     listAdapter = new StationsAdapter(this, new java.util.ArrayList[Station])
     listView.setAdapter(listAdapter)
