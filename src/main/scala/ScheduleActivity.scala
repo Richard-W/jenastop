@@ -40,14 +40,15 @@ class ScheduleActivity extends AppCompatActivity {
     // Create UI
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_schedule)
-    getSupportActionBar.setDisplayUseLogoEnabled(true)
-    getSupportActionBar.setIcon(R.mipmap.ic_launcher)
-    getSupportActionBar.setDisplayShowHomeEnabled(true)
+
+    val actionBar = getSupportActionBar
+    actionBar.setHomeButtonEnabled(true)
+    actionBar.setDisplayHomeAsUpEnabled(true);
 
     // Get station from intent
     val intent = getIntent
     station = intent.getStringExtra("station")
-    getSupportActionBar.setSubtitle(station)
+    actionBar.setSubtitle(station)
 
     // Setup ListView
     listAdapter = new ScheduleAdapter(this, new java.util.ArrayList[Schedule])
@@ -114,18 +115,19 @@ class ScheduleActivity extends AppCompatActivity {
 
   override def onOptionsItemSelected(item: MenuItem): Boolean = {
     item.getItemId match {
+      case R.id.home | android.R.id.home ⇒
+        this.finish()
       case R.id.action_refresh =>
         clearList()
         progressBar.setVisibility(View.VISIBLE)
         fetchSchedule()
-        true
       case R.id.sort_by_dest | R.id.sort_by_line | R.id.sort_by_time ⇒
         sorting = item.getItemId
         displayList()
-        true
       case _ ⇒
-        super.onOptionsItemSelected(item)
+        return super.onOptionsItemSelected(item)
     }
+    true
   }
 
   def fetchSchedule(): Unit = {
