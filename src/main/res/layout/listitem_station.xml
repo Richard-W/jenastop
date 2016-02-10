@@ -8,7 +8,7 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/listitem_station_fav"
         android:layout_centerVertical="true"
-        android:src="@drawable/ic_favorite_border_white"/>
+        android:src="@drawable/ic_star_border_white_24dp"/>
 
     <TextView
         android:id="@+id/listitem_station_name"
