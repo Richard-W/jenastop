@@ -5,7 +5,7 @@
         android:id="@+id/action_sort"
         android:icon="@drawable/ic_sort_white_24dp"
         android:title="@string/sort"
-        jenastop:showAsAction="always">
+        jenastop:showAsAction="ifRoom">
         <menu>
             <item
                 android:id="@+id/sort_by_time"
@@ -23,7 +23,6 @@
         android:id="@+id/action_refresh"
         android:icon="@drawable/ic_refresh_white_24dp"
         android:title="@string/action_refresh"
-        jenastop:showAsAction="always"
-        android:showAsAction="always" />
+        jenastop:showAsAction="ifRoom" />
 
 </menu>
