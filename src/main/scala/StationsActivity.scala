@@ -15,17 +15,36 @@
  */
 package net.metanoise.android.jenastop
 
+import android.content.res.Configuration
 import android.os.{ AsyncTask, Bundle }
-import android.support.v7.app.AppCompatActivity
+import android.support.v4.widget.DrawerLayout
+import android.support.v7.app.{ ActionBarDrawerToggle, AppCompatActivity }
 import android.view.{ MenuItem, Menu, View }
-import android.widget.{ Button, ListView, ProgressBar, TextView }
+import android.widget._
 
 import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContext
 
 class StationsActivity extends AppCompatActivity {
 
+  def progressBar = findViewById(R.id.stations_progress_bar).asInstanceOf[ProgressBar]
+
+  def failedText = findViewById(R.id.stations_failed_text).asInstanceOf[TextView]
+
+  def errorDescription = findViewById(R.id.stations_error_description).asInstanceOf[TextView]
+
+  def retryButton = findViewById(R.id.stations_retry_button).asInstanceOf[Button]
+
+  def listView = findViewById(R.id.stations_list_view).asInstanceOf[ListView]
+
+  def navDrawer = findViewById(R.id.nav_drawer_layout).asInstanceOf[DrawerLayout]
+
+  def navList = findViewById(R.id.nav_list).asInstanceOf[ListView]
+
   var listAdapter: StationsAdapter = null
+  var navAdapter: ArrayAdapter[String] = null
+  var drawerToggle: ActionBarDrawerToggle = null
+
   implicit val activity = this
 
   override def onCreateOptionsMenu(menu: Menu): Boolean = {
@@ -33,7 +52,13 @@ class StationsActivity extends AppCompatActivity {
     true
   }
 
+  override def onConfigurationChanged(config: Configuration): Unit = {
+    super.onConfigurationChanged(config)
+    drawerToggle.onConfigurationChanged(config)
+  }
+
   override def onOptionsItemSelected(item: MenuItem): Boolean = {
+    if (drawerToggle.onOptionsItemSelected(item)) return true
     item.getItemId match {
       case R.id.action_refresh ⇒
         fetchStations
@@ -46,9 +71,17 @@ class StationsActivity extends AppCompatActivity {
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_stations)
-    getSupportActionBar.setDisplayUseLogoEnabled(true)
-    getSupportActionBar.setIcon(R.mipmap.ic_launcher)
-    getSupportActionBar.setDisplayShowHomeEnabled(true)
+
+    val elements = Array("Test1", "Test2", "Test3")
+    navAdapter = new ArrayAdapter[String](this, android.R.layout.simple_list_item_1, elements)
+    navList.setAdapter(navAdapter)
+
+    drawerToggle = new ActionBarDrawerToggle(this, navDrawer, R.string.nav_open, R.string.nav_close)
+    drawerToggle.setDrawerIndicatorEnabled(true)
+
+    val actionBar = getSupportActionBar
+    actionBar.setHomeButtonEnabled(true)
+    actionBar.setDisplayHomeAsUpEnabled(true)
 
     listAdapter = new StationsAdapter(this, new java.util.ArrayList[Station])
     listView.setAdapter(listAdapter)
@@ -63,6 +96,11 @@ class StationsActivity extends AppCompatActivity {
       listAdapter.list.addAll(stations)
       listAdapter.notifyDataSetChanged()
     }
+  }
+
+  override def onPostCreate(bundle: Bundle): Unit = {
+    super.onPostCreate(bundle)
+    drawerToggle.syncState()
   }
 
   def fetchStations = {
@@ -92,16 +130,6 @@ class StationsActivity extends AppCompatActivity {
         errorDescription.setText(t.getMessage)
     }
   }
-
-  def progressBar = findViewById(R.id.stations_progress_bar).asInstanceOf[ProgressBar]
-
-  def failedText = findViewById(R.id.stations_failed_text).asInstanceOf[TextView]
-
-  def errorDescription = findViewById(R.id.stations_error_description).asInstanceOf[TextView]
-
-  def retryButton = findViewById(R.id.stations_retry_button).asInstanceOf[Button]
-
-  def listView = findViewById(R.id.stations_list_view).asInstanceOf[ListView]
 
   def onRetryButtonClick(view: View) {
 

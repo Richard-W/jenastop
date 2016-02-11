@@ -2,4 +2,5 @@
 <resources>
     <color name="accent">#eceff1</color>
     <color name="textOnAccent">#546e7a</color>
+    <color name="navDrawerBackground">#000000</color>
 </resources>

@@ -12,4 +12,6 @@
     <string name="sort_by_time">Sort by time</string>
     <string name="sort_by_dest">Sort by destination</string>
     <string name="sort_by_line">Sort by line</string>
+    <string name="nav_open">Open navigation drawer</string>
+    <string name="nav_close">Close navigation drawer</string>
 </resources>

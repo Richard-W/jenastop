@@ -13,4 +13,6 @@
     <string name="sort_by_dest">Nach Ziel sortieren</string>
     <string name="sort_by_line">Nach Linie sortieren</string>
     <string name="sort_by_time">Nach Zeit sortieren</string>
+    <string name="nav_close">Navigation schließen</string>
+    <string name="nav_open">Navigation öffnen</string>
 </resources>
