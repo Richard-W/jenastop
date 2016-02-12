@@ -20,12 +20,12 @@ import java.util.{ Timer, TimerTask }
 import android.os.{ AsyncTask, Bundle }
 import android.view.{ Menu, MenuItem, View }
 import android.widget.{ Button, ListView, ProgressBar, TextView }
-import net.metanoise.android.jenastop.ui.ScalaActivity
+import net.metanoise.android.jenastop.ui.{ HomeButton, ScalaActivity }
 
 import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContext
 
-class ScheduleActivity extends ScalaActivity {
+class ScheduleActivity extends ScalaActivity with HomeButton {
 
   var station: String = null
   var listAdapter: ScheduleAdapter = null
@@ -41,14 +41,10 @@ class ScheduleActivity extends ScalaActivity {
     // Create UI
     super.onCreate(savedInstanceState)
 
-    val actionBar = getSupportActionBar
-    actionBar.setHomeButtonEnabled(true)
-    actionBar.setDisplayHomeAsUpEnabled(true);
-
     // Get station from intent
     val intent = getIntent
     station = intent.getStringExtra("station")
-    actionBar.setSubtitle(station)
+    getSupportActionBar.setSubtitle(station)
 
     // Setup ListView
     listAdapter = new ScheduleAdapter(this, new java.util.ArrayList[Schedule])
@@ -115,8 +111,6 @@ class ScheduleActivity extends ScalaActivity {
 
   override def onOptionsItemSelected(item: MenuItem): Boolean = {
     item.getItemId match {
-      case R.id.home | android.R.id.home ⇒
-        this.finish()
       case R.id.action_refresh =>
         clearList()
         progressBar.setVisibility(View.VISIBLE)

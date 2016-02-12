@@ -20,11 +20,16 @@ import android.view.MenuItem
 
 trait HomeButton extends ScalaActivity {
 
+  /**
+    * Override this with the action that happens when the home button is clicked
+    */
+  def onHomeButtonClick(): Unit = this.finish()
+
   override protected def onCreate(bundle: Bundle): Unit = {
     super.onCreate(bundle)
     val actionBar = getSupportActionBar
     actionBar.setHomeButtonEnabled(true)
-    actionBar.setDisplayHomeAsUpEnabled(true);
+    actionBar.setDisplayHomeAsUpEnabled(true)
   }
 
   override protected def onOptionsItemSelected(item: MenuItem): Boolean = {
