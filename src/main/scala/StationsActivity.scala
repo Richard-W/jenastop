@@ -15,17 +15,15 @@
  */
 package net.metanoise.android.jenastop
 
-import android.content.res.Configuration
 import android.os.{ AsyncTask, Bundle }
-import android.support.v4.widget.DrawerLayout
-import android.support.v7.app.{ ActionBarDrawerToggle, AppCompatActivity }
+import android.support.v4.content.ContextCompat
 import android.view.{ MenuItem, Menu, View }
 import android.widget._
 
 import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContext
 
-class StationsActivity extends AppCompatActivity {
+class StationsActivity extends ScalaActivity with NavigationDrawer {
 
   def progressBar = findViewById(R.id.stations_progress_bar).asInstanceOf[ProgressBar]
 
@@ -37,13 +35,12 @@ class StationsActivity extends AppCompatActivity {
 
   def listView = findViewById(R.id.stations_list_view).asInstanceOf[ListView]
 
-  def navDrawer = findViewById(R.id.nav_drawer_layout).asInstanceOf[DrawerLayout]
-
-  def navList = findViewById(R.id.nav_list).asInstanceOf[ListView]
-
   var listAdapter: StationsAdapter = null
-  var navAdapter: ArrayAdapter[String] = null
-  var drawerToggle: ActionBarDrawerToggle = null
+
+  override protected lazy val navigationAdapter: ArrayAdapter[String] = new ArrayAdapter[String](this, android.R.layout.simple_list_item_1, Array("Test1", "Test2", "Test3"))
+  override protected val navigationOpenResource: Int = R.string.nav_open
+  override protected val navigationCloseResource: Int = R.string.nav_close
+  override protected lazy val navigationBackgroundColor: Int = ContextCompat.getColor(this, R.color.navDrawerBackground)
 
   implicit val activity = this
 
@@ -52,13 +49,7 @@ class StationsActivity extends AppCompatActivity {
     true
   }
 
-  override def onConfigurationChanged(config: Configuration): Unit = {
-    super.onConfigurationChanged(config)
-    drawerToggle.onConfigurationChanged(config)
-  }
-
   override def onOptionsItemSelected(item: MenuItem): Boolean = {
-    if (drawerToggle.onOptionsItemSelected(item)) return true
     item.getItemId match {
       case R.id.action_refresh ⇒
         fetchStations
@@ -68,20 +59,10 @@ class StationsActivity extends AppCompatActivity {
     }
   }
 
+  def contentView = getLayoutInflater.inflate(R.layout.activity_stations, null)
+
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_stations)
-
-    val elements = Array("Test1", "Test2", "Test3")
-    navAdapter = new ArrayAdapter[String](this, android.R.layout.simple_list_item_1, elements)
-    navList.setAdapter(navAdapter)
-
-    drawerToggle = new ActionBarDrawerToggle(this, navDrawer, R.string.nav_open, R.string.nav_close)
-    drawerToggle.setDrawerIndicatorEnabled(true)
-
-    val actionBar = getSupportActionBar
-    actionBar.setHomeButtonEnabled(true)
-    actionBar.setDisplayHomeAsUpEnabled(true)
 
     listAdapter = new StationsAdapter(this, new java.util.ArrayList[Station])
     listView.setAdapter(listAdapter)
@@ -96,11 +77,6 @@ class StationsActivity extends AppCompatActivity {
       listAdapter.list.addAll(stations)
       listAdapter.notifyDataSetChanged()
     }
-  }
-
-  override def onPostCreate(bundle: Bundle): Unit = {
-    super.onPostCreate(bundle)
-    drawerToggle.syncState()
   }
 
   def fetchStations = {
@@ -137,4 +113,5 @@ class StationsActivity extends AppCompatActivity {
     listAdapter.notifyDataSetChanged()
     fetchStations
   }
+
 }

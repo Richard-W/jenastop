@@ -26,7 +26,7 @@ import android.widget.{ Button, ListView, ProgressBar, TextView }
 import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContext
 
-class ScheduleActivity extends AppCompatActivity {
+class ScheduleActivity extends ScalaActivity {
 
   var station: String = null
   var listAdapter: ScheduleAdapter = null
@@ -36,10 +36,11 @@ class ScheduleActivity extends AppCompatActivity {
 
   implicit val activity = this
 
+  def contentView = getLayoutInflater.inflate(R.layout.activity_schedule, null)
+
   protected override def onCreate(savedInstanceState: Bundle) {
     // Create UI
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_schedule)
 
     val actionBar = getSupportActionBar
     actionBar.setHomeButtonEnabled(true)
