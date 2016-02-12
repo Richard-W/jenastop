@@ -26,10 +26,29 @@ import android.widget.{ ArrayAdapter, ListView }
 
 trait NavigationDrawer extends ScalaActivity {
 
+  /**
+   * Override this to set the adapter for the navigation list
+   */
   protected def navigationAdapter: ArrayAdapter[String]
+
+  /**
+   * Override this to set the background color for the navigation drawer
+   */
   protected def navigationBackgroundColor: Int = Color.argb(0, 0, 0, 0)
+
+  /**
+   * Override this to set the width of the navigation drawer in dp
+   */
   protected def navigationWidth: Float = 280
+
+  /**
+   * Override this with the string resource that describes the opening of the drawer
+   */
   protected def navigationOpenResource: Int
+
+  /**
+   * Override this with the string resource that describes the closing of the drawer
+   */
   protected def navigationCloseResource: Int
 
   private lazy val drawerToggle: ActionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, navigationOpenResource, navigationCloseResource)
