@@ -27,10 +27,16 @@ import scala.concurrent.ExecutionContext
 
 class ScheduleActivity extends ScalaActivity with HomeButton {
 
-  var station: String = null
-  var listAdapter: ScheduleAdapter = null
-  var originallyOrdered: Seq[Schedule] = null
-  var sorting: Int = 0
+  lazy val failedText = findViewById(R.id.schedule_failed_text).asInstanceOf[TextView]
+  lazy val errorDescription = findViewById(R.id.schedule_error_description).asInstanceOf[TextView]
+  lazy val retryButton = findViewById(R.id.schedule_retry_button).asInstanceOf[Button]
+  lazy val listView = findViewById(R.id.schedule_list_view).asInstanceOf[ListView]
+  lazy val progressBar = findViewById(R.id.schedule_progress_bar).asInstanceOf[ProgressBar]
+
+  lazy val station: String = getIntent.getStringExtra("station")
+  lazy val listAdapter: ScheduleAdapter = new ScheduleAdapter(this, new java.util.ArrayList[Schedule])
+  var originallyOrdered: Seq[Schedule] = Seq()
+  var sorting: Int = R.id.sort_by_time
   var timer: Timer = null
 
   implicit val activity = this
@@ -40,20 +46,11 @@ class ScheduleActivity extends ScalaActivity with HomeButton {
   protected override def onCreate(savedInstanceState: Bundle) {
     // Create UI
     super.onCreate(savedInstanceState)
-
-    // Get station from intent
-    val intent = getIntent
-    station = intent.getStringExtra("station")
     getSupportActionBar.setSubtitle(station)
 
     // Setup ListView
-    listAdapter = new ScheduleAdapter(this, new java.util.ArrayList[Schedule])
     listView.setAdapter(listAdapter)
     listView.setClickable(false)
-
-    // Initialize other fields
-    originallyOrdered = Seq()
-    sorting = R.id.sort_by_time
   }
 
   protected override def onResume(): Unit = {
@@ -153,16 +150,6 @@ class ScheduleActivity extends ScalaActivity with HomeButton {
         errorDescription.setText(t.getMessage)
     }
   }
-
-  def failedText = findViewById(R.id.schedule_failed_text).asInstanceOf[TextView]
-
-  def errorDescription = findViewById(R.id.schedule_error_description).asInstanceOf[TextView]
-
-  def retryButton = findViewById(R.id.schedule_retry_button).asInstanceOf[Button]
-
-  def listView = findViewById(R.id.schedule_list_view).asInstanceOf[ListView]
-
-  def progressBar = findViewById(R.id.schedule_progress_bar).asInstanceOf[ProgressBar]
 
   def onRetryButtonClick(view: View) {
     progressBar.setVisibility(View.VISIBLE)
