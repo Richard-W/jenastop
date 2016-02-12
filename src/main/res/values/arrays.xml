@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pref_scheduleSorting_entries">
+        <item>@string/sort_by_time</item>
+        <item>@string/sort_by_line</item>
+        <item>@string/sort_by_dest</item>
+    </string-array>
+    <string-array name="pref_scheduleSorting_values">
+        <item>time</item>
+        <item>line</item>
+        <item>dest</item>
+    </string-array>
+</resources>

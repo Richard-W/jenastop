@@ -18,6 +18,7 @@ package net.metanoise.android.jenastop
 import java.util.{ Timer, TimerTask }
 
 import android.os.{ AsyncTask, Bundle }
+import android.preference.PreferenceManager
 import android.view.{ Menu, MenuItem, View }
 import android.widget.{ Button, ListView, ProgressBar, TextView }
 import net.metanoise.android.jenastop.ui.{ HomeButton, ScalaActivity }
@@ -36,7 +37,7 @@ class ScheduleActivity extends ScalaActivity with HomeButton {
   lazy val station: String = getIntent.getStringExtra("station")
   lazy val listAdapter: ScheduleAdapter = new ScheduleAdapter(this, new java.util.ArrayList[Schedule])
   var originallyOrdered: Seq[Schedule] = Seq()
-  var sorting: Int = R.id.sort_by_time
+  var sorting: String = "time"
   var timer: Timer = null
 
   implicit val activity = this
@@ -47,6 +48,10 @@ class ScheduleActivity extends ScalaActivity with HomeButton {
     // Create UI
     super.onCreate(savedInstanceState)
     getSupportActionBar.setSubtitle(station)
+
+    sorting = PreferenceManager
+      .getDefaultSharedPreferences(this)
+      .getString("pref_scheduleSorting", "time")
 
     // Setup ListView
     listView.setAdapter(listAdapter)
@@ -79,22 +84,22 @@ class ScheduleActivity extends ScalaActivity with HomeButton {
 
   override def onSaveInstanceState(bundle: Bundle): Unit = {
     super.onSaveInstanceState(bundle)
-    bundle.putInt("sorting", sorting)
+    bundle.putString("sorting", sorting)
     bundle.putParcelableArray("schedules", originallyOrdered.toArray)
   }
 
   override def onRestoreInstanceState(bundle: Bundle): Unit = {
     super.onRestoreInstanceState(bundle)
-    sorting = bundle.getInt("sorting")
+    sorting = bundle.getString("sorting")
     originallyOrdered = bundle.getParcelableArray("schedules").toSeq map { _.asInstanceOf[Schedule] }
     displayList()
   }
 
   def displayList(): Unit = {
     val sorted = sorting match {
-      case R.id.sort_by_dest ⇒ originallyOrdered.sortBy { _.destination }
-      case R.id.sort_by_line ⇒ originallyOrdered.sortBy { _.line }
-      case R.id.sort_by_time ⇒ originallyOrdered
+      case "dest" ⇒ originallyOrdered.sortBy { _.destination }
+      case "line" ⇒ originallyOrdered.sortBy { _.line }
+      case "time" ⇒ originallyOrdered
     }
     listAdapter.list.clear()
     listAdapter.list.addAll(sorted)
@@ -112,8 +117,14 @@ class ScheduleActivity extends ScalaActivity with HomeButton {
         clearList()
         progressBar.setVisibility(View.VISIBLE)
         fetchSchedule()
-      case R.id.sort_by_dest | R.id.sort_by_line | R.id.sort_by_time ⇒
-        sorting = item.getItemId
+      case R.id.sort_by_dest ⇒
+        sorting = "dest"
+        displayList()
+      case R.id.sort_by_line ⇒
+        sorting = "line"
+        displayList()
+      case R.id.sort_by_time ⇒
+        sorting = "time"
         displayList()
       case _ ⇒
         return super.onOptionsItemSelected(item)

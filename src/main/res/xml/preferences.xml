@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:key="pref_scheduleSorting"
+        android:title="@string/pref_scheduleSorting"
+        android:entries="@array/pref_scheduleSorting_entries"
+        android:entryValues="@array/pref_scheduleSorting_values"
+        android:defaultValue="time" />
+</PreferenceScreen>

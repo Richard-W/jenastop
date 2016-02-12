@@ -16,4 +16,5 @@
     <string name="nav_close">Navigation schließen</string>
     <string name="nav_open">Navigation öffnen</string>
     <string name="title_activity_settings">Einstellungen</string>
+    <string name="pref_scheduleSorting">Standardsortierung des Fahrplans</string>
 </resources>

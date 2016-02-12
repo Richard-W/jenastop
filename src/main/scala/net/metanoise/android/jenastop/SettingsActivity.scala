@@ -15,10 +15,28 @@
  */
 package net.metanoise.android.jenastop
 
+import android.os.Bundle
+import android.preference.PreferenceFragment
 import android.view.View
 import net.metanoise.android.jenastop.ui.{ HomeButton, ScalaActivity }
+
+class SettingsFragment extends PreferenceFragment {
+
+  override def onCreate(bundle: Bundle): Unit = {
+    super.onCreate(bundle)
+    addPreferencesFromResource(R.xml.preferences)
+  }
+}
 
 class SettingsActivity extends ScalaActivity with HomeButton {
 
   override protected def contentView: View = getLayoutInflater.inflate(R.layout.activity_settings, null)
+
+  override def onCreate(bundle: Bundle): Unit = {
+    super.onCreate(bundle)
+
+    getFragmentManager.beginTransaction()
+      .replace(android.R.id.content, new SettingsFragment)
+      .commit()
+  }
 }
