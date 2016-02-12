@@ -25,7 +25,7 @@ import scala.concurrent.{ ExecutionContext, Future }
 
 class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, DatabaseHelper.DATABASE_NAME, null, DatabaseHelper.DATABASE_VERSION) {
   def onCreate(db: SQLiteDatabase) = {
-    db.execSQL("CREATE TABLE `stations` (`name` TEXT PRIMARY KEY, `favorite` INT)")
+    db.execSQL("CREATE TABLE `stations` (`name` TEXT PRIMARY KEY, `favorite` INT, `gpsX` REAL, `gpsY` REAL)")
     db.execSQL("CREATE TABLE `flags` (`name` TEXT PRIMARY KEY, `value` INT)")
     db.execSQL("INSERT INTO `flags` (`name`, `value`) VALUES ('needStationsUpdate', '1')")
   }
@@ -100,6 +100,17 @@ class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, Databas
         db.endTransaction()
       }
     }
+
+    if (oldVersion < 6 && newVersion >= 6) {
+      db.beginTransaction()
+      try {
+        db.execSQL("ALTER TABLE `stations` ADD COLUMN `gpsX` REAL")
+        db.execSQL("ALTER TABLE `stations` ADD COLUMN `gpsY` REAL")
+        db.setTransactionSuccessful()
+      } finally {
+        db.endTransaction()
+      }
+    }
   }
 
   def flag(name: String): Boolean = {
@@ -166,6 +177,6 @@ class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, Databas
 }
 
 object DatabaseHelper {
-  private val DATABASE_VERSION: Int = 5
+  private val DATABASE_VERSION: Int = 6
   private val DATABASE_NAME: String = "jenastop_storage"
 }
