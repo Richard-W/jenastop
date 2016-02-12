@@ -25,17 +25,9 @@ import scala.concurrent.{ ExecutionContext, Future }
 
 class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, DatabaseHelper.DATABASE_NAME, null, DatabaseHelper.DATABASE_VERSION) {
   def onCreate(db: SQLiteDatabase) = {
-    db.beginTransaction()
-    try {
-      db.execSQL("CREATE TABLE `stations` (`name` TEXT PRIMARY KEY, `favorite` INT)")
-      db.execSQL("CREATE TABLE `flags` (`name` TEXT PRIMARY KEY, `value` INT)")
-      db.execSQL("INSERT INTO `flags` (`name`, `value`) VALUES ('needStationsUpdate', '1')")
-      db.execSQL("CREATE TABLE `values` (`name` TEXT PRIMARY KEY, `value` TEXT)")
-      db.execSQL("INSERT INTO `values` (`name`, `value`) VALUES ('defaultScheduleSorting', 'time')")
-      db.setTransactionSuccessful()
-    } finally {
-      db.endTransaction()
-    }
+    db.execSQL("CREATE TABLE `stations` (`name` TEXT PRIMARY KEY, `favorite` INT)")
+    db.execSQL("CREATE TABLE `flags` (`name` TEXT PRIMARY KEY, `value` INT)")
+    db.execSQL("INSERT INTO `flags` (`name`, `value`) VALUES ('needStationsUpdate', '1')")
   }
 
   @tailrec
@@ -108,17 +100,6 @@ class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, Databas
         db.endTransaction()
       }
     }
-
-    if (oldVersion < 6 && newVersion >= 6) {
-      db.beginTransaction()
-      try {
-        db.execSQL("CREATE TABLE `values` (`name` TEXT PRIMARY KEY, `value` TEXT)")
-        db.execSQL("INSERT INTO `values` (`name`, `value`) VALUES ('defaultScheduleSorting', 'time')")
-        db.setTransactionSuccessful()
-      } finally {
-        db.endTransaction()
-      }
-    }
   }
 
   def flag(name: String): Boolean = {
@@ -131,18 +112,6 @@ class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, Databas
   def flag(name: String, value: Boolean): Unit = {
     val db = this.getWritableDatabase
     db.execSQL("UPDATE `flags` SET `value` = ? WHERE `name` = ?", Array(if (value) "1" else "0", name))
-  }
-
-  def value(name: String): String = {
-    val db = this.getReadableDatabase
-    val cursor = db.rawQuery("SELECT `value` FROM `values` WHERE `name` = ?", Array(name))
-    cursor.moveToFirst()
-    cursor.getString(0)
-  }
-
-  def value(name: String, value: String): Unit = {
-    val db = this.getWritableDatabase
-    db.execSQL("UPDATE `values` SET `value` = ? WHERE `name` = ?", Array(value))
   }
 
   def stations: Set[Station] = {
@@ -197,6 +166,6 @@ class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, Databas
 }
 
 object DatabaseHelper {
-  private val DATABASE_VERSION: Int = 6
+  private val DATABASE_VERSION: Int = 5
   private val DATABASE_NAME: String = "jenastop_storage"
 }
