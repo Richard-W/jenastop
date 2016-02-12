@@ -20,6 +20,7 @@ import java.util.{ Timer, TimerTask }
 import android.os.{ AsyncTask, Bundle }
 import android.view.{ Menu, MenuItem, View }
 import android.widget.{ Button, ListView, ProgressBar, TextView }
+import net.metanoise.android.jenastop.ui.ScalaActivity
 
 import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContext

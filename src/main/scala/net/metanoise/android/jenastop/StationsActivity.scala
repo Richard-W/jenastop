@@ -19,6 +19,7 @@ import android.os.{ AsyncTask, Bundle }
 import android.support.v4.content.ContextCompat
 import android.view.{ Menu, MenuItem, View }
 import android.widget._
+import net.metanoise.android.jenastop.ui.{ ScalaActivity, NavigationDrawer }
 
 import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContext
