@@ -35,7 +35,7 @@ class StationsActivity extends ScalaActivity with NavigationDrawer {
 
   lazy val listAdapter: StationsAdapter = new StationsAdapter(this, new java.util.ArrayList[Station])
 
-  override protected lazy val navigationAdapter: ArrayAdapter[String] = new NavigationAdapter(this)
+  override protected lazy val navigationAdapter = new NavigationAdapter(this)
   override protected val navigationOpenResource: Int = R.string.nav_open
   override protected val navigationCloseResource: Int = R.string.nav_close
   override protected lazy val navigationBackgroundColor: Int = ContextCompat.getColor(this, R.color.navDrawerBackground)

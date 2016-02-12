@@ -29,7 +29,7 @@ trait NavigationDrawer extends ScalaActivity {
   /**
    * Override this to set the adapter for the navigation list
    */
-  protected def navigationAdapter: ArrayAdapter[String]
+  protected def navigationAdapter: ArrayAdapter[_]
 
   /**
    * Override this to set the background color for the navigation drawer

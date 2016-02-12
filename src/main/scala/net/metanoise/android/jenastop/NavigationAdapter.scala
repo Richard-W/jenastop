@@ -19,28 +19,36 @@ import android.app.Activity
 import android.content.Intent
 import android.view.View.OnClickListener
 import android.view.{ View, ViewGroup }
-import android.widget.{ TextView, ArrayAdapter }
+import android.widget.{ ImageView, TextView, ArrayAdapter }
 
 import scala.collection.JavaConversions._
 
-class NavigationAdapter private (private val activity: Activity, private val list: java.util.List[String]) extends ArrayAdapter[String](activity, R.layout.listitem_navigation, list) {
+case class NavigationItem(
+  name: Int,
+  icon: Int,
+  action: () ⇒ Unit)
+
+class NavigationAdapter private (private val activity: Activity, private val list: java.util.List[NavigationItem]) extends ArrayAdapter[NavigationItem](activity, R.layout.listitem_navigation, list) {
 
   def this(activity: Activity) = {
-    this(activity, new java.util.ArrayList[String])
-    list.add(activity.getResources.getString(R.string.title_activity_settings))
+    this(activity, new java.util.ArrayList[NavigationItem])
+    list.add(NavigationItem(
+      R.string.title_activity_settings,
+      R.drawable.ic_settings_white_24dp,
+      () ⇒ { activity.startActivity(new Intent(activity, classOf[SettingsActivity])) })
+    )
   }
 
   override def getView(position: Int, convertView: View, parent: ViewGroup): View = {
     val view =
       if (convertView == null) activity.getLayoutInflater.inflate(R.layout.listitem_navigation, parent, false)
       else convertView
-    view.findViewById(R.id.setting_name).asInstanceOf[TextView].setText(list(position))
+    val item = list(position)
+    view.findViewById(R.id.navitem_name).asInstanceOf[TextView].setText(activity.getResources.getString(item.name))
+    view.findViewById(R.id.navitem_icon).asInstanceOf[ImageView].setImageResource(item.icon)
     view.setOnClickListener(new OnClickListener {
       override def onClick(v: View): Unit = {
-        if (list(position) == activity.getResources.getString(R.string.title_activity_settings)) {
-          val intent = new Intent(activity, classOf[SettingsActivity])
-          activity.startActivity(intent)
-        }
+        item.action()
       }
     })
     view
