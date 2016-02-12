@@ -26,17 +26,14 @@ import scala.concurrent.ExecutionContext
 
 class StationsActivity extends ScalaActivity with NavigationDrawer {
 
-  def progressBar = findViewById(R.id.stations_progress_bar).asInstanceOf[ProgressBar]
+  /* UI elements */
+  lazy val progressBar = findViewById(R.id.stations_progress_bar).asInstanceOf[ProgressBar]
+  lazy val failedText = findViewById(R.id.stations_failed_text).asInstanceOf[TextView]
+  lazy val errorDescription = findViewById(R.id.stations_error_description).asInstanceOf[TextView]
+  lazy val retryButton = findViewById(R.id.stations_retry_button).asInstanceOf[Button]
+  lazy val listView = findViewById(R.id.stations_list_view).asInstanceOf[ListView]
 
-  def failedText = findViewById(R.id.stations_failed_text).asInstanceOf[TextView]
-
-  def errorDescription = findViewById(R.id.stations_error_description).asInstanceOf[TextView]
-
-  def retryButton = findViewById(R.id.stations_retry_button).asInstanceOf[Button]
-
-  def listView = findViewById(R.id.stations_list_view).asInstanceOf[ListView]
-
-  var listAdapter: StationsAdapter = null
+  lazy val listAdapter: StationsAdapter = new StationsAdapter(this, new java.util.ArrayList[Station])
 
   override protected lazy val navigationAdapter: ArrayAdapter[String] = new ArrayAdapter[String](this, android.R.layout.simple_list_item_1, Array("Test1", "Test2", "Test3"))
   override protected val navigationOpenResource: Int = R.string.nav_open
@@ -45,27 +42,10 @@ class StationsActivity extends ScalaActivity with NavigationDrawer {
 
   implicit val activity = this
 
-  override def onCreateOptionsMenu(menu: Menu): Boolean = {
-    getMenuInflater.inflate(R.menu.menu_stations, menu)
-    true
-  }
-
-  override def onOptionsItemSelected(item: MenuItem): Boolean = {
-    item.getItemId match {
-      case R.id.action_refresh ⇒
-        fetchStations
-        true
-      case _ ⇒
-        super.onOptionsItemSelected(item)
-    }
-  }
-
   def contentView = getLayoutInflater.inflate(R.layout.activity_stations, null)
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
-
-    listAdapter = new StationsAdapter(this, new java.util.ArrayList[Station])
     listView.setAdapter(listAdapter)
 
     val db = new DatabaseHelper(this)
@@ -109,10 +89,23 @@ class StationsActivity extends ScalaActivity with NavigationDrawer {
   }
 
   def onRetryButtonClick(view: View) {
-
     listAdapter.list.clear()
     listAdapter.notifyDataSetChanged()
     fetchStations
   }
 
+  override def onCreateOptionsMenu(menu: Menu): Boolean = {
+    getMenuInflater.inflate(R.menu.menu_stations, menu)
+    true
+  }
+
+  override def onOptionsItemSelected(item: MenuItem): Boolean = {
+    item.getItemId match {
+      case R.id.action_refresh ⇒
+        fetchStations
+        true
+      case _ ⇒
+        super.onOptionsItemSelected(item)
+    }
+  }
 }

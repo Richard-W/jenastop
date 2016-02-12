@@ -21,8 +21,8 @@ import android.view.MenuItem
 trait HomeButton extends ScalaActivity {
 
   /**
-    * Override this with the action that happens when the home button is clicked
-    */
+   * Override this with the action that happens when the home button is clicked
+   */
   def onHomeButtonClick(): Unit = this.finish()
 
   override protected def onCreate(bundle: Bundle): Unit = {
