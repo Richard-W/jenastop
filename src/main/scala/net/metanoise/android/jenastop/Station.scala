@@ -37,18 +37,41 @@ case class Station(
 }
 
 object Station {
-  def fetchStations()(implicit ec: ExecutionContext): Future[Seq[String]] = Future {
+  def fetchStations()(implicit ec: ExecutionContext): Future[Seq[(String, String, String)]] = Future {
     val url = new URL("http://www.nahverkehr-jena.de/index.php?eID=ajaxDispatcher&request[pluginName]=Stopsmonitor&request[controller]=Stopsmonitor&request[action]=getAllStops")
     val conn = url.openConnection.asInstanceOf[HttpURLConnection]
     val json = Source.fromInputStream(conn.getInputStream).mkString.parseJson
 
-    (json.asInstanceOf[JsArray].elements map {
-      _.asInstanceOf[JsObject]
+    json.asInstanceOf[JsArray].elements map { obj ⇒
+      val children = obj.asInstanceOf[JsObject]
         .fields("children").asInstanceOf[JsObject]
+
+      val name = children
         .fields("name").asInstanceOf[JsArray]
         .elements(0).asInstanceOf[JsObject]
         .fields("value").asInstanceOf[JsString]
         .value
-    } groupBy { a ⇒ a }).toSeq map { case (a, b) ⇒ a }
+
+      val firstPoint = children
+        .fields("stopPoints").asInstanceOf[JsArray].elements
+        .apply(0).asInstanceOf[JsObject]
+        .fields("children").asInstanceOf[JsObject]
+        .fields("stopPoint").asInstanceOf[JsArray].elements
+        .apply(0).asInstanceOf[JsObject]
+        .fields("children").asInstanceOf[JsObject]
+      // What the fuck. Who designed this?
+
+      val gpsX = firstPoint
+        .fields("gpsX").asInstanceOf[JsArray].elements
+        .apply(0).asInstanceOf[JsObject]
+        .fields("value").asInstanceOf[JsString].value
+
+      val gpsY = firstPoint
+        .fields("gpsY").asInstanceOf[JsArray].elements
+        .apply(0).asInstanceOf[JsObject]
+        .fields("value").asInstanceOf[JsString].value
+
+      (name, gpsX, gpsY)
+    }
   }
 }

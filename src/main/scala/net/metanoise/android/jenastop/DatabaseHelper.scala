@@ -110,6 +110,7 @@ class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, Databas
       } finally {
         db.endTransaction()
       }
+      flag("needStationsUpdate", true)
     }
   }
 
@@ -144,13 +145,18 @@ class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, Databas
 
   def updateStations()(implicit ec: ExecutionContext): Future[Unit] = {
     val favs: Set[String] = this.stations filter { _.favorite } map { _.name }
-    Station.fetchStations map { stationNames ⇒
+    Station.fetchStations map { stations ⇒
       val db = this.getWritableDatabase
       db.beginTransaction()
       try {
         db.execSQL("DELETE FROM `stations`")
-        for (name <- stationNames) {
-          db.execSQL("INSERT INTO `stations` (`name`, `favorite`) VALUES (?, ?)", Array(name, if (favs.contains(name)) "1" else "0"))
+        for ((name, gpsX, gpsY) <- stations) {
+          db.execSQL("INSERT INTO `stations` (`name`, `favorite`, `gpsX`, `gpsY`) VALUES (?, ?, ?, ?)", Array(
+            name,
+            if (favs.contains(name)) "1" else "0",
+            gpsX,
+            gpsY
+          ))
         }
         db.setTransactionSuccessful()
       } catch {
