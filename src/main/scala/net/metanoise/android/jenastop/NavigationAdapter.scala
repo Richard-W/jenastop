@@ -33,15 +33,10 @@ class NavigationAdapter private (private val activity: Activity, private val lis
   def this(activity: Activity) = {
     this(activity, new java.util.ArrayList[NavigationItem])
     list.add(NavigationItem(
-      R.string.title_activity_navigation,
-      R.drawable.ic_navigation_white_24dp,
-      () ⇒ {}
-    ))
-    list.add(NavigationItem(
       R.string.title_activity_settings,
       R.drawable.ic_settings_white_24dp,
-      () ⇒ { activity.startActivity(new Intent(activity, classOf[SettingsActivity])) }
-    ))
+      () ⇒ { activity.startActivity(new Intent(activity, classOf[SettingsActivity])) })
+    )
   }
 
   override def getView(position: Int, convertView: View, parent: ViewGroup): View = {
