@@ -19,7 +19,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 
-abstract class ScalaActivity extends AppCompatActivity {
+trait ScalaActivity extends AppCompatActivity {
 
   /**
    * Override this to wrap the view returned by contentView into another
