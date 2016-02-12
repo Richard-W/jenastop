@@ -15,7 +15,6 @@
  */
 package net.metanoise.android
 
-import scala.annotation.tailrec
 import scala.concurrent.Future
 import scala.language.implicitConversions
 

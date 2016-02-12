@@ -17,7 +17,7 @@ package net.metanoise.android.jenastop
 
 import android.app.Activity
 
-import scala.concurrent.{ Promise, Future, ExecutionContext }
+import scala.concurrent.{ ExecutionContext, Future, Promise }
 import scala.util.{ Failure, Success }
 
 class RichFuture[T](future: Future[T]) {

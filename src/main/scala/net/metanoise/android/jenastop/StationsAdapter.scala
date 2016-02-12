@@ -15,15 +15,15 @@
  */
 package net.metanoise.android.jenastop
 
-import scala.collection.JavaConversions._
-
 import java.util.Collections
 
 import android.app.Activity
 import android.content.Intent
 import android.view.View.OnClickListener
 import android.view.{ View, ViewGroup }
-import android.widget.{ SectionIndexer, ArrayAdapter, ImageView, TextView }
+import android.widget.{ ArrayAdapter, ImageView, SectionIndexer, TextView }
+
+import scala.collection.JavaConversions._
 
 class StationsAdapter(activity: Activity, val list: java.util.List[Station]) extends ArrayAdapter[Station](activity, R.layout.listitem_station, list) with SectionIndexer {
   implicit val db = new DatabaseHelper(activity)

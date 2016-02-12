@@ -17,7 +17,7 @@ package net.metanoise.android.jenastop
 
 import android.os.{ AsyncTask, Bundle }
 import android.support.v4.content.ContextCompat
-import android.view.{ MenuItem, Menu, View }
+import android.view.{ Menu, MenuItem, View }
 import android.widget._
 
 import scala.collection.JavaConversions._

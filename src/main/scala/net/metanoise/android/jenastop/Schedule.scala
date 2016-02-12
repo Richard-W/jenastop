@@ -19,8 +19,8 @@ import android.os.Parcelable.Creator
 import android.os.{ Parcel, Parcelable }
 import org.jsoup._
 
-import scala.concurrent.{ ExecutionContext, Future }
 import scala.collection.JavaConversions._
+import scala.concurrent.{ ExecutionContext, Future }
 
 case class Schedule(
     line: Int,

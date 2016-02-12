@@ -21,8 +21,8 @@ import android.os.Bundle
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.util.TypedValue
-import android.view.{ ViewGroup, Gravity, MenuItem, View }
-import android.widget.{ ListView, ArrayAdapter }
+import android.view.{ Gravity, MenuItem, View, ViewGroup }
+import android.widget.{ ArrayAdapter, ListView }
 
 trait NavigationDrawer extends ScalaActivity {
 

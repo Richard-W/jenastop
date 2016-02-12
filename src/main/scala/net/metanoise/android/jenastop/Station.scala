@@ -15,8 +15,7 @@
  */
 package net.metanoise.android.jenastop
 
-import java.net.URL
-import java.net.HttpURLConnection
+import java.net.{ HttpURLConnection, URL }
 
 import spray.json._
 

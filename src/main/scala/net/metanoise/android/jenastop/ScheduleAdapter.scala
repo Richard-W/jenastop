@@ -15,8 +15,6 @@
  */
 package net.metanoise.android.jenastop
 
-import java.util.{ Calendar, Collections, GregorianCalendar }
-
 import android.view.{ View, ViewGroup }
 import android.widget.{ ArrayAdapter, TextView }
 

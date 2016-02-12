@@ -15,11 +15,9 @@
  */
 package net.metanoise.android.jenastop
 
-import java.util.Timer
-import java.util.TimerTask
+import java.util.{ Timer, TimerTask }
 
 import android.os.{ AsyncTask, Bundle }
-import android.support.v7.app.AppCompatActivity
 import android.view.{ Menu, MenuItem, View }
 import android.widget.{ Button, ListView, ProgressBar, TextView }
 
