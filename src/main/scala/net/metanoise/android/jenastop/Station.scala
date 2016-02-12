@@ -24,7 +24,9 @@ import scala.io.Source
 
 case class Station(
     name: String,
-    favorite: Boolean) extends Ordered[Station] {
+    favorite: Boolean,
+    gpsX: Double,
+    gpsY: Double) extends Ordered[Station] {
 
   def setFavorite(favorite: Boolean)(implicit db: DatabaseHelper): Station = {
     db.setFavorite(this, favorite)

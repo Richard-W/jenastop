@@ -135,8 +135,10 @@ class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, Databas
       else {
         val name = cursor.getString(0)
         val favorite = cursor.getInt(1) != 0
+        val gpsX = cursor.getDouble(2)
+        val gpsY = cursor.getDouble(3)
         cursor.moveToNext()
-        helper(cursor, set + Station(name, favorite))
+        helper(cursor, set + Station(name, favorite, gpsX, gpsY))
       }
     }
     cursor.moveToFirst()
