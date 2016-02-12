@@ -15,4 +15,5 @@
     <string name="sort_by_time">Nach Zeit sortieren</string>
     <string name="nav_close">Navigation schließen</string>
     <string name="nav_open">Navigation öffnen</string>
+    <string name="title_activity_settings">Einstellungen</string>
 </resources>

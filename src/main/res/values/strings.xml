@@ -14,4 +14,5 @@
     <string name="sort_by_line">Sort by line</string>
     <string name="nav_open">Open navigation drawer</string>
     <string name="nav_close">Close navigation drawer</string>
+    <string name="title_activity_settings">Settings</string>
 </resources>
