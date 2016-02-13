@@ -44,7 +44,7 @@ object Station {
     val conn = url.openConnection.asInstanceOf[HttpURLConnection]
     val json = Source.fromInputStream(conn.getInputStream).mkString.parseJson
 
-    json.asInstanceOf[JsArray].elements map { obj ⇒
+    val list = json.asInstanceOf[JsArray].elements map { obj ⇒
       val children = obj.asInstanceOf[JsObject]
         .fields("children").asInstanceOf[JsObject]
 
@@ -75,5 +75,12 @@ object Station {
 
       (name, gpsX, gpsY)
     }
+
+    // Remove duplicate station names
+    (for (i <- list.indices) yield {
+      val (name, _, _) = list(i)
+      if ((list map { _._1 }).slice(0, i).contains(name)) None
+      else Some(list(i))
+    }) filter { _.isDefined } map { _.get }
   }
 }
