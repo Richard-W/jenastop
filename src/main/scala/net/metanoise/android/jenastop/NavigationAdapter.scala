@@ -35,8 +35,13 @@ class NavigationAdapter private (private val activity: Activity, private val lis
     list.add(NavigationItem(
       R.string.title_activity_settings,
       R.drawable.ic_settings_white_24dp,
-      () ⇒ { activity.startActivity(new Intent(activity, classOf[SettingsActivity])) })
-    )
+      () ⇒ { activity.startActivity(new Intent(activity, classOf[SettingsActivity])) }
+    ))
+    list.add(NavigationItem(
+      R.string.title_activity_about,
+      R.drawable.ic_info_outline_white_24dp,
+      () ⇒ { activity.startActivity(new Intent(activity, classOf[AboutActivity])) }
+    ))
   }
 
   override def getView(position: Int, convertView: View, parent: ViewGroup): View = {
