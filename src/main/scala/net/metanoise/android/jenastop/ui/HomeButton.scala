@@ -35,7 +35,7 @@ trait HomeButton extends ScalaActivity {
   override protected def onOptionsItemSelected(item: MenuItem): Boolean = {
     item.getItemId match {
       case android.R.id.home ⇒
-        this.finish()
+        onHomeButtonClick()
         true
       case _ ⇒
         super.onOptionsItemSelected(item)
