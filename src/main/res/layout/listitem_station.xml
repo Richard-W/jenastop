@@ -6,21 +6,22 @@
         android:id="@+id/listitem_station_fav"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/listitem_station_margin"
+        android:layout_marginBottom="@dimen/listitem_station_margin"
         android:contentDescription="@string/listitem_station_fav"
-        android:layout_centerVertical="true"
         android:src="@drawable/ic_star_border_white_24dp"/>
 
     <TextView
         android:id="@+id/listitem_station_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/listitem_station_margin"
+        android:layout_marginBottom="@dimen/listitem_station_margin"
         android:text="Nimmerland"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
-        android:layout_centerVertical="true"
         android:layout_toRightOf="@+id/listitem_station_fav"
-        android:layout_toEndOf="@+id/listitem_station_fav"
-        android:layout_marginBottom="12dp"/>
+        android:layout_toEndOf="@+id/listitem_station_fav"/>
 
 </RelativeLayout>
