@@ -26,7 +26,8 @@ import android.widget.{ ArrayAdapter, ImageView, SectionIndexer, TextView }
 import scala.collection.JavaConversions._
 
 class StationsAdapter(activity: Activity, val list: java.util.List[Station]) extends ArrayAdapter[Station](activity, R.layout.listitem_station, list) with SectionIndexer {
-  implicit val db = new DatabaseHelper(activity)
+
+  implicit val context = activity
 
   override def getView(position: Int, convertView: View, parent: ViewGroup) = {
     val station = this.getItem(position)
@@ -42,7 +43,7 @@ class StationsAdapter(activity: Activity, val list: java.util.List[Station]) ext
       if (station.favorite) R.drawable.ic_star_white_24dp else R.drawable.ic_star_border_white_24dp
     )
     favStar.setOnClickListener(new OnClickListener {
-      override def onClick(v: View): Unit = {
+      override def onClick(v: View): Unit = withDatabase { implicit db ⇒
         while (StationsAdapter.this.list.contains(station)) {
           StationsAdapter.this.list.remove(station)
         }

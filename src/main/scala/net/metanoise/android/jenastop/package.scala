@@ -15,10 +15,18 @@
  */
 package net.metanoise.android
 
+import android.content.Context
+
 import scala.concurrent.Future
 import scala.language.implicitConversions
 
 package object jenastop {
   implicit def futureToRichFuture[T](future: Future[T]): RichFuture[T] = new RichFuture(future)
 
+  def withDatabase[T](f: (DatabaseHelper) ⇒ T)(implicit context: Context): T = {
+    val db = new DatabaseHelper(context)
+    val result = f(db)
+    db.close()
+    result
+  }
 }

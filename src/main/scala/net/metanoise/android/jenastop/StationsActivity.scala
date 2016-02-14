@@ -44,11 +44,10 @@ class StationsActivity extends ScalaActivity with NavigationDrawer {
 
   def contentView = getLayoutInflater.inflate(R.layout.activity_stations, null)
 
-  override def onCreate(savedInstanceState: Bundle): Unit = {
+  override def onCreate(savedInstanceState: Bundle): Unit = withDatabase { db ⇒
     super.onCreate(savedInstanceState)
     listView.setAdapter(listAdapter)
 
-    val db = new DatabaseHelper(this)
     val stations = db.stations
 
     if (db.flag("needStationsUpdate")) {
@@ -60,9 +59,8 @@ class StationsActivity extends ScalaActivity with NavigationDrawer {
     }
   }
 
-  def fetchStations = {
+  def fetchStations = withDatabase { db ⇒
     implicit val ec: ExecutionContext = ExecutionContext.fromExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
-    val db = new DatabaseHelper(this)
 
     progressBar.setVisibility(View.VISIBLE)
     listView.setVisibility(View.VISIBLE)
