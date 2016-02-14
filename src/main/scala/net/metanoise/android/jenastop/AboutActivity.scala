@@ -17,6 +17,7 @@ package net.metanoise.android.jenastop
 
 import android.os.Bundle
 import android.text.Html
+import android.text.method.LinkMovementMethod
 import android.widget.TextView
 import net.metanoise.android.jenastop.ui.{ ScalaActivity, HomeButton }
 
@@ -30,5 +31,6 @@ class AboutActivity extends ScalaActivity with HomeButton {
     super.onCreate(bundle)
     val html = Html.fromHtml(getResources.getString(R.string.about_text))
     textView.setText(html)
+    textView.setMovementMethod(LinkMovementMethod.getInstance())
   }
 }
