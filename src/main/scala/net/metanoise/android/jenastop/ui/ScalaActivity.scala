@@ -15,7 +15,9 @@
  */
 package net.metanoise.android.jenastop.ui
 
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 
@@ -39,5 +41,6 @@ trait ScalaActivity extends AppCompatActivity {
   override protected def onCreate(bundle: Bundle): Unit = {
     super.onCreate(bundle)
     setContentView(topContentView)
+    getSupportActionBar.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, net.metanoise.android.jenastop.R.color.themeColorDark)))
   }
 }

@@ -40,7 +40,7 @@ class StationsAdapter(activity: Activity, val list: java.util.List[Station]) ext
     view.findViewById(R.id.listitem_station_name).asInstanceOf[TextView].setText(station.name)
     val favStar = view.findViewById(R.id.listitem_station_fav).asInstanceOf[ImageView]
     favStar.setImageResource(
-      if (station.favorite) R.drawable.ic_star_white_24dp else R.drawable.ic_star_border_white_24dp
+      if (station.favorite) R.drawable.ic_star_blue_grey_900_24dp else R.drawable.ic_star_border_blue_grey_900_24dp
     )
     favStar.setOnClickListener(new OnClickListener {
       override def onClick(v: View): Unit = withDatabase { implicit db ⇒

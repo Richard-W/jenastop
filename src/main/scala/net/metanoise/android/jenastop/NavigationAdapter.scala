@@ -34,12 +34,12 @@ class NavigationAdapter private (private val activity: Activity, private val lis
     this(activity, new java.util.ArrayList[NavigationItem])
     list.add(NavigationItem(
       R.string.title_activity_settings,
-      R.drawable.ic_settings_white_24dp,
+      R.drawable.ic_settings_blue_grey_900_24dp,
       () ⇒ { activity.startActivity(new Intent(activity, classOf[SettingsActivity])) }
     ))
     list.add(NavigationItem(
       R.string.title_activity_about,
-      R.drawable.ic_info_outline_white_24dp,
+      R.drawable.ic_info_outline_blue_grey_900_24dp,
       () ⇒ { activity.startActivity(new Intent(activity, classOf[AboutActivity])) }
     ))
   }

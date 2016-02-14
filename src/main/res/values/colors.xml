@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="accent">#eceff1</color>
-    <color name="textOnAccent">#546e7a</color>
-    <color name="navDrawerBackground">#263238</color>
+    <color name="themeColorDark">#263238</color>
+    <color name="accent">#546e7a</color>
+    <color name="textOnAccent">#eceff1</color>
+    <color name="navDrawerBackground">#eceff1</color>
 </resources>
