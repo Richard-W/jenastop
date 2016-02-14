@@ -32,8 +32,10 @@ class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, Databas
 
   @tailrec
   private def cursorToSet(cursor: Cursor, set: Set[String] = Set()): Set[String] = {
-    if (cursor.isAfterLast) set
-    else {
+    if (cursor.isAfterLast) {
+      cursor.close()
+      set
+    } else {
       val elem = cursor.getString(0)
       cursor.moveToNext
       cursorToSet(cursor, set + elem)
@@ -82,7 +84,7 @@ class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, Databas
         cursor.moveToFirst()
         @tailrec
         def helper(): Unit = {
-          if (cursor.isAfterLast) {}
+          if (cursor.isAfterLast) cursor.close()
           else {
             val name = cursor.getString(0)
             val fav = cursor.getInt(1).toString
@@ -118,7 +120,9 @@ class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, Databas
     val db = this.getReadableDatabase
     val cursor = db.rawQuery("SELECT `value` FROM `flags` WHERE `name` = ?", Array(name))
     cursor.moveToFirst()
-    cursor.getInt(0) != 0
+    val result = cursor.getInt(0) != 0
+    cursor.close()
+    result
   }
 
   def flag(name: String, value: Boolean): Unit = {
@@ -131,8 +135,10 @@ class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, Databas
     val cursor = db.rawQuery("SELECT * FROM `stations`", Array())
     @tailrec
     def helper(cursor: Cursor, set: Set[Station] = Set()): Set[Station] = {
-      if (cursor.isAfterLast) set
-      else {
+      if (cursor.isAfterLast) {
+        cursor.close()
+        set
+      } else {
         val name = cursor.getString(0)
         val favorite = cursor.getInt(1) != 0
         val gpsX = cursor.getDouble(2)
