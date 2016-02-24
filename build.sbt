@@ -4,7 +4,7 @@ android.Plugin.androidBuild
 
 name := "jenastop"
 
-versionName := Some("2.0-SNAPSHOT")
+versionName := Some("2.0-RC1")
 
 versionCode := Some(26)
 
