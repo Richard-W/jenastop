@@ -108,11 +108,11 @@ class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, Databas
       try {
         db.execSQL("ALTER TABLE `stations` ADD COLUMN `gpsX` REAL")
         db.execSQL("ALTER TABLE `stations` ADD COLUMN `gpsY` REAL")
+        db.execSQL("UPDATE `flags` SET `value` = 1 WHERE `name` = 'needStationsUpdate'")
         db.setTransactionSuccessful()
       } finally {
         db.endTransaction()
       }
-      flag("needStationsUpdate", true)
     }
   }
 
