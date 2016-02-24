@@ -4,9 +4,9 @@ android.Plugin.androidBuild
 
 name := "jenastop"
 
-versionName := Some("2.0-SNAPSHOT")
+versionName := Some("2.1-SNAPSHOT")
 
-versionCode := Some(26)
+versionCode := Some(27)
 
 platformTarget in Android := "android-23"
 
