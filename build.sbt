@@ -4,7 +4,7 @@ name := "jenastop"
 
 versionName := Some("2.1-SNAPSHOT")
 
-versionCode := Some(28)
+versionCode := Some(29)
 
 platformTarget in Android := "android-24"
 
