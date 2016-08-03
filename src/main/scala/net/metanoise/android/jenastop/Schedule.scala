@@ -24,11 +24,13 @@ import scala.concurrent.{ ExecutionContext, Future }
 
 case class Schedule(
     line: Int,
+    lineName: String,
     destination: String,
     time: String
 ) extends Parcelable {
   override def writeToParcel(dest: Parcel, flags: Int): Unit = {
     dest.writeInt(line)
+    dest.writeString(lineName)
     dest.writeString(destination)
     dest.writeString(time)
   }
@@ -43,6 +45,7 @@ object Schedule {
 
     override def createFromParcel(source: Parcel): Schedule = Schedule(
       source.readInt,
+      source.readString,
       source.readString,
       source.readString
     )
@@ -65,10 +68,16 @@ object Schedule {
     if (monitoringResult != null) {
       monitoringResult.select("tbody tr").toList map { element ⇒
         val cols = element.select("td").toList
-        val line = cols(0).child(0).html.toInt
+        val lineName = cols(0).child(0).html
         val destination = cols(1).html
         val time = cols(2).html.split("<br>")(0)
-        Schedule(line, destination, time)
+        val line = try {
+          lineName.replaceAll("[^0-9]", "").toInt
+        } catch {
+          // line is only used for sorting anyway
+          case _: Exception ⇒ lineName.hashCode
+        }
+        Schedule(line, lineName, destination, time)
       }
     } else {
       Seq.empty
