@@ -26,7 +26,8 @@ import scala.collection.JavaConversions._
 case class NavigationItem(
   name: Int,
   icon: Int,
-  action: () ⇒ Unit)
+  action: () ⇒ Unit
+)
 
 class NavigationAdapter private (private val activity: Activity, private val list: java.util.List[NavigationItem]) extends ArrayAdapter[NavigationItem](activity, R.layout.listitem_navigation, list) {
 

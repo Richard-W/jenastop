@@ -25,7 +25,8 @@ import scala.concurrent.{ ExecutionContext, Future }
 case class Schedule(
     line: Int,
     destination: String,
-    time: String) extends Parcelable {
+    time: String
+) extends Parcelable {
   override def writeToParcel(dest: Parcel, flags: Int): Unit = {
     dest.writeInt(line)
     dest.writeString(destination)
