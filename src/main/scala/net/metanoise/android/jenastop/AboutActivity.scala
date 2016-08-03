@@ -16,10 +16,11 @@
 package net.metanoise.android.jenastop
 
 import android.os.Bundle
-import android.text.Html
+import android.text.{ Html, Spanned }
 import android.text.method.LinkMovementMethod
 import android.widget.TextView
-import net.metanoise.android.jenastop.ui.{ ScalaActivity, HomeButton }
+import com.github.ghik.silencer.silent
+import net.metanoise.android.jenastop.ui.{ HomeButton, ScalaActivity }
 
 class AboutActivity extends ScalaActivity with HomeButton {
 
@@ -29,7 +30,7 @@ class AboutActivity extends ScalaActivity with HomeButton {
 
   override def onCreate(bundle: Bundle): Unit = {
     super.onCreate(bundle)
-    val html = Html.fromHtml(getResources.getString(R.string.about_text))
+    val html = Html.fromHtml(getResources.getString(R.string.about_text)): @silent // Deprecated but needed for compat
     textView.setText(html)
     textView.setMovementMethod(LinkMovementMethod.getInstance())
   }
