@@ -16,7 +16,7 @@
 package net.metanoise.android.jenastop
 
 import android.os.Bundle
-import android.text.{ Html, Spanned }
+import android.text.Html
 import android.text.method.LinkMovementMethod
 import android.widget.TextView
 import com.github.ghik.silencer.silent
