@@ -16,8 +16,8 @@ proguardOptions in Android ++= Seq("-dontobfuscate", "-dontoptimize")
 
 libraryDependencies ++= Seq(
   "com.android.support" % "appcompat-v7" % "23.2.1",
-  "io.spray" %%  "spray-json" % "1.3.2",
-  "org.jsoup" %	"jsoup"	% "1.9.2",
+  "io.spray" %%  "spray-json" % "1.3.3",
+  "org.jsoup" %	"jsoup"	% "1.10.2",
   "com.github.ghik" % "silencer-lib" % "0.4"
 )
 
