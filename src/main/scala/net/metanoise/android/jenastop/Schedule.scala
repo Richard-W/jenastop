@@ -52,7 +52,7 @@ object Schedule {
   }
 
   def fetch(stationName: String)(implicit ec: ExecutionContext): Future[Seq[Schedule]] = Future {
-    val html = Jsoup.connect("http://www.nahverkehr-jena.de/fahrplan/haltestellenmonitor.html")
+    val html = Jsoup.connect("https://www.nahverkehr-jena.de/fahrplan/haltestellenmonitor.html")
       .data("tx_akteasygojenah_stopsmonitor[__referrer][@extension]", "AktEasygoJenah")
       .data("tx_akteasygojenah_stopsmonitor[__referrer][@vendor]", "AKT")
       .data("tx_akteasygojenah_stopsmonitor[__referrer][@controller]", "Stopsmonitor")
