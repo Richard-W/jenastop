@@ -24,7 +24,8 @@ import android.widget.{ Button, ListView, ProgressBar, TextView }
 import net.metanoise.android.jenastop.ui.{ HomeButton, ScalaActivity }
 
 import scala.collection.JavaConversions._
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ ExecutionContext, Promise, Future }
+import scala.util.Success
 
 class ScheduleActivity extends ScalaActivity with HomeButton {
 
@@ -135,14 +136,25 @@ class ScheduleActivity extends ScalaActivity with HomeButton {
   def fetchSchedule(): Unit = {
     implicit val ec: ExecutionContext = ExecutionContext.fromExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
 
-    if (originallyOrdered.isEmpty) {
-      // No data available from previous fetches ⇒ display progress bar
-      runOnUiThread(new Runnable {
-        override def run(): Unit = progressBar.setVisibility(View.VISIBLE)
-      })
+    val displayProgressBarFuture = {
+      if (originallyOrdered.isEmpty) {
+        // No data available from previous fetches ⇒ display progress bar
+        val displayProgressBarPromise = Promise[Unit]
+        runOnUiThread(new Runnable {
+          override def run(): Unit = {
+            progressBar.setVisibility(View.VISIBLE)
+            displayProgressBarPromise.complete(Success(Unit))
+          }
+        })
+        displayProgressBarPromise.future
+      } else {
+        Future.successful(Unit)
+      }
     }
 
-    ScheduleItem.fetch(station) mapUI { schedules ⇒
+    val scheduleFuture = ScheduleItem.fetch(station).zip(displayProgressBarFuture) map { case (a, _) => a }
+
+    scheduleFuture mapUI { schedules ⇒
       originallyOrdered = schedules
       progressBar.setVisibility(View.GONE)
       if (schedules.isEmpty) {
