@@ -35,8 +35,8 @@ class ScheduleActivity extends ScalaActivity with HomeButton {
   lazy val progressBar = findViewById(R.id.schedule_progress_bar).asInstanceOf[ProgressBar]
 
   lazy val station: String = getIntent.getStringExtra("station")
-  lazy val listAdapter: ScheduleAdapter = new ScheduleAdapter(this, new java.util.ArrayList[Schedule])
-  var originallyOrdered: Seq[Schedule] = Seq()
+  lazy val listAdapter: ScheduleAdapter = new ScheduleAdapter(this, new java.util.ArrayList[ScheduleItem])
+  var originallyOrdered: Seq[ScheduleItem] = Seq()
   var sorting: String = "time"
   var timer: Timer = null
 
@@ -91,7 +91,7 @@ class ScheduleActivity extends ScalaActivity with HomeButton {
   override def onRestoreInstanceState(bundle: Bundle): Unit = {
     super.onRestoreInstanceState(bundle)
     sorting = bundle.getString("sorting")
-    originallyOrdered = bundle.getParcelableArray("schedules").toSeq map { _.asInstanceOf[Schedule] }
+    originallyOrdered = bundle.getParcelableArray("schedules").toSeq map { _.asInstanceOf[ScheduleItem] }
     displayList()
   }
 
@@ -140,7 +140,7 @@ class ScheduleActivity extends ScalaActivity with HomeButton {
       progressBar.setVisibility(View.VISIBLE)
     }
 
-    Schedule.fetch(station) mapUI { schedules ⇒
+    ScheduleItem.fetch(station) mapUI { schedules ⇒
       originallyOrdered = schedules
       progressBar.setVisibility(View.GONE)
       if (schedules.isEmpty) {

@@ -22,7 +22,7 @@ import org.jsoup._
 import scala.collection.JavaConversions._
 import scala.concurrent.{ ExecutionContext, Future }
 
-case class Schedule(
+case class ScheduleItem(
   line: Int,
   lineName: String,
   destination: String,
@@ -37,19 +37,19 @@ case class Schedule(
   override def describeContents(): Int = 0
 }
 
-object Schedule {
-  val CREATOR = new Creator[Schedule] {
+object ScheduleItem {
+  val CREATOR = new Creator[ScheduleItem] {
 
-    override def newArray(size: Int): Array[Schedule] = new Array(size)
+    override def newArray(size: Int): Array[ScheduleItem] = new Array(size)
 
-    override def createFromParcel(source: Parcel): Schedule = Schedule(
+    override def createFromParcel(source: Parcel): ScheduleItem = ScheduleItem(
       source.readInt,
       source.readString,
       source.readString,
       source.readString)
   }
 
-  def fetch(stationName: String)(implicit ec: ExecutionContext): Future[Seq[Schedule]] = Future {
+  def fetch(stationName: String)(implicit ec: ExecutionContext): Future[Seq[ScheduleItem]] = Future {
     val html = Jsoup.connect("https://www.nahverkehr-jena.de/fahrplan/haltestellenmonitor.html")
       .data("tx_akteasygojenah_stopsmonitor[__referrer][@extension]", "AktEasygoJenah")
       .data("tx_akteasygojenah_stopsmonitor[__referrer][@vendor]", "AKT")
@@ -75,7 +75,7 @@ object Schedule {
           // line is only used for sorting anyway
           case _: Exception ⇒ lineName.hashCode
         }
-        Schedule(line, lineName, destination, time)
+        ScheduleItem(line, lineName, destination, time)
       }
     } else {
       Seq.empty

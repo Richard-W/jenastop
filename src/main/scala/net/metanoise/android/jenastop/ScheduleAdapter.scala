@@ -18,7 +18,7 @@ package net.metanoise.android.jenastop
 import android.view.{ View, ViewGroup }
 import android.widget.{ ArrayAdapter, TextView }
 
-class ScheduleAdapter(activity: ScheduleActivity, val list: java.util.List[Schedule]) extends ArrayAdapter[Schedule](activity, R.layout.listitem_schedule, list) {
+class ScheduleAdapter(activity: ScheduleActivity, val list: java.util.List[ScheduleItem]) extends ArrayAdapter[ScheduleItem](activity, R.layout.listitem_schedule, list) {
   override def getView(position: Int, convertView: View, parent: ViewGroup): View = {
     val view = if (convertView == null) {
       activity.getLayoutInflater.inflate(R.layout.listitem_schedule, parent, false)
@@ -26,7 +26,7 @@ class ScheduleAdapter(activity: ScheduleActivity, val list: java.util.List[Sched
       convertView
     }
 
-    val schedule: Schedule = list.get(position)
+    val schedule: ScheduleItem = list.get(position)
     view.findViewById(R.id.listitem_schedule_line).asInstanceOf[TextView].setText(schedule.lineName)
     view.findViewById(R.id.listitem_schedule_destination).asInstanceOf[TextView].setText(
       if (schedule.destination.length > 18) schedule.destination.substring(0, 18) + "…" else schedule.destination)
