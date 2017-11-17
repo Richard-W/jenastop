@@ -6,11 +6,11 @@ versionName := Some("2.1-SNAPSHOT")
 
 versionCode := Some(30)
 
-platformTarget in Android := "android-24"
+platformTarget in Android := "android-27"
 
 minSdkVersion in Android := "15"
 
-targetSdkVersion in Android := "24"
+targetSdkVersion in Android := "27"
 
 proguardOptions in Android ++= Seq("-dontobfuscate", "-dontoptimize")
 
