@@ -29,8 +29,7 @@ class ScheduleAdapter(activity: ScheduleActivity, val list: java.util.List[Sched
     val schedule: Schedule = list.get(position)
     view.findViewById(R.id.listitem_schedule_line).asInstanceOf[TextView].setText(schedule.lineName)
     view.findViewById(R.id.listitem_schedule_destination).asInstanceOf[TextView].setText(
-      if (schedule.destination.length > 18) schedule.destination.substring(0, 18) + "…" else schedule.destination
-    )
+      if (schedule.destination.length > 18) schedule.destination.substring(0, 18) + "…" else schedule.destination)
     view.findViewById(R.id.listitem_schedule_time).asInstanceOf[TextView].setText(schedule.time)
 
     view

@@ -58,8 +58,7 @@ trait NavigationDrawer extends ScalaActivity {
     list.setBackgroundColor(navigationBackgroundColor)
     val params = new DrawerLayout.LayoutParams(
       TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, navigationWidth, getResources.getDisplayMetrics).toInt,
-      ViewGroup.LayoutParams.MATCH_PARENT
-    )
+      ViewGroup.LayoutParams.MATCH_PARENT)
     params.gravity = Gravity.LEFT
     list.setLayoutParams(params)
     list

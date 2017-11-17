@@ -163,8 +163,7 @@ class DatabaseHelper(context: Context) extends SQLiteOpenHelper(context, Databas
             name,
             if (favs.contains(name)) "1" else "0",
             gpsX,
-            gpsY
-          ))
+            gpsY))
         }
         db.setTransactionSuccessful()
       } catch {

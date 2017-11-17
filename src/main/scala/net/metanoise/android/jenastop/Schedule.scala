@@ -23,11 +23,10 @@ import scala.collection.JavaConversions._
 import scala.concurrent.{ ExecutionContext, Future }
 
 case class Schedule(
-    line: Int,
-    lineName: String,
-    destination: String,
-    time: String
-) extends Parcelable {
+  line: Int,
+  lineName: String,
+  destination: String,
+  time: String) extends Parcelable {
   override def writeToParcel(dest: Parcel, flags: Int): Unit = {
     dest.writeInt(line)
     dest.writeString(lineName)
@@ -47,8 +46,7 @@ object Schedule {
       source.readInt,
       source.readString,
       source.readString,
-      source.readString
-    )
+      source.readString)
   }
 
   def fetch(stationName: String)(implicit ec: ExecutionContext): Future[Seq[Schedule]] = Future {

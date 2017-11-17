@@ -26,8 +26,7 @@ import scala.collection.JavaConversions._
 case class NavigationItem(
   name: Int,
   icon: Int,
-  action: () ⇒ Unit
-)
+  action: () ⇒ Unit)
 
 class NavigationAdapter private (private val activity: Activity, private val list: java.util.List[NavigationItem]) extends ArrayAdapter[NavigationItem](activity, R.layout.listitem_navigation, list) {
 
@@ -36,13 +35,11 @@ class NavigationAdapter private (private val activity: Activity, private val lis
     list.add(NavigationItem(
       R.string.title_activity_settings,
       R.drawable.ic_settings_blue_grey_900_24dp,
-      () ⇒ { activity.startActivity(new Intent(activity, classOf[SettingsActivity])) }
-    ))
+      () ⇒ { activity.startActivity(new Intent(activity, classOf[SettingsActivity])) }))
     list.add(NavigationItem(
       R.string.title_activity_about,
       R.drawable.ic_info_outline_blue_grey_900_24dp,
-      () ⇒ { activity.startActivity(new Intent(activity, classOf[AboutActivity])) }
-    ))
+      () ⇒ { activity.startActivity(new Intent(activity, classOf[AboutActivity])) }))
   }
 
   override def getView(position: Int, convertView: View, parent: ViewGroup): View = {

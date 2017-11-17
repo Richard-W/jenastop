@@ -23,11 +23,10 @@ import scala.concurrent.{ ExecutionContext, Future }
 import scala.io.Source
 
 case class Station(
-    name: String,
-    favorite: Boolean,
-    gpsX: Double,
-    gpsY: Double
-) extends Ordered[Station] {
+  name: String,
+  favorite: Boolean,
+  gpsX: Double,
+  gpsY: Double) extends Ordered[Station] {
 
   def setFavorite(favorite: Boolean)(implicit db: DatabaseHelper): Station = {
     db.setFavorite(this, favorite)
