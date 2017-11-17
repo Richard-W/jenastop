@@ -1,4 +1,4 @@
-android.Plugin.androidBuild
+enablePlugins(android.AndroidApp)
 
 name := "jenastop"
 
