@@ -15,10 +15,10 @@ targetSdkVersion in Android := "27"
 proguardOptions in Android ++= Seq("-dontobfuscate", "-dontoptimize")
 
 libraryDependencies ++= Seq(
-  "com.android.support" % "appcompat-v7" % "23.2.1",
-  "io.spray" %%  "spray-json" % "1.3.3",
-  "org.jsoup" %	"jsoup"	% "1.10.2",
-  "com.github.ghik" % "silencer-lib" % "0.4"
+  "com.android.support" % "appcompat-v7" % "25.3.1",
+  "io.spray" %%  "spray-json" % "1.3.4",
+  "org.jsoup" %	"jsoup"	% "1.11.1",
+  "com.github.ghik" %% "silencer-lib" % "0.5"
 )
 
 scalaVersion := "2.11.8"
@@ -27,4 +27,4 @@ scalacOptions ++= Seq("-target:jvm-1.7", "-feature", "-deprecation", "-Xfatal-wa
 
 javacOptions ++= Seq("-source", "1.7", "-target", "1.7")
 
-addCompilerPlugin("com.github.ghik" % "silencer-plugin" % "0.4")
+addCompilerPlugin("com.github.ghik" %% "silencer-plugin" % "0.5")
