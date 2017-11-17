@@ -137,7 +137,9 @@ class ScheduleActivity extends ScalaActivity with HomeButton {
 
     if (originallyOrdered.isEmpty) {
       // No data available from previous fetches ⇒ display progress bar
-      progressBar.setVisibility(View.VISIBLE)
+      runOnUiThread(new Runnable {
+        override def run(): Unit = progressBar.setVisibility(View.VISIBLE)
+      })
     }
 
     ScheduleItem.fetch(station) mapUI { schedules ⇒
