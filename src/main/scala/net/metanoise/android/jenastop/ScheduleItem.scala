@@ -15,6 +15,7 @@
  */
 package net.metanoise.android.jenastop
 
+import android.app.Activity
 import android.os.Parcelable.Creator
 import android.os.{ Parcel, Parcelable }
 import org.jsoup._
@@ -49,7 +50,7 @@ object ScheduleItem {
       source.readString)
   }
 
-  def fetch(stationName: String)(implicit ec: ExecutionContext): Future[Seq[ScheduleItem]] = Future {
+  def fetch(stationName: String, context: Activity)(implicit ec: ExecutionContext): Future[Seq[ScheduleItem]] = Future {
     val html = Jsoup.connect("https://www.nahverkehr-jena.de/fahrplan/haltestellenmonitor.html")
       .data("tx_akteasygojenah_stopsmonitor[__referrer][@extension]", "AktEasygoJenah")
       .data("tx_akteasygojenah_stopsmonitor[__referrer][@vendor]", "AKT")
@@ -68,7 +69,19 @@ object ScheduleItem {
         val cols = element.select("td").toList
         val lineName = cols(0).child(0).html
         val destination = cols(1).html
-        val time = cols(2).html.split("<br>")(0)
+        val time = {
+          val time_str = cols(2).html.split("<br>")(0)
+          val time_substr = time_str.substring(0, 4)
+          if (time_substr == "in K") {
+            // Implies the whole string is "in Kürze"
+            // Encoding of the 'ü' character changed multiple times in
+            // the past so we're just checking the first 4 characters
+            context.getResources().getString(R.string.shortly)
+          } else {
+            // "in x min" doesn't need to be localized
+            time_str
+          }
+        }
         val line = try {
           lineName.replaceAll("[^0-9]", "").toInt
         } catch {

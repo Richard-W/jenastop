@@ -18,4 +18,5 @@
     <string name="title_activity_settings">Einstellungen</string>
     <string name="pref_scheduleSorting">Standardsortierung des Fahrplans</string>
     <string name="title_activity_about">Über diese App</string>
+    <string name="shortly">in Kürze</string>
 </resources>

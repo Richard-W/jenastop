@@ -150,7 +150,7 @@ class ScheduleActivity extends ScalaActivity with HomeButton {
       displayProgressBarPromise.future
     }
 
-    val scheduleFuture = ScheduleItem.fetch(station).zip(displayProgressBarFuture) map { case (a, _) ⇒ a }
+    val scheduleFuture = ScheduleItem.fetch(station, this).zip(displayProgressBarFuture) map { case (a, _) ⇒ a }
 
     scheduleFuture mapUI { schedules ⇒
       originallyOrdered = schedules

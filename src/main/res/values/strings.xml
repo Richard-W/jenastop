@@ -50,4 +50,5 @@
         ]]>
     </string>
     <string name="pref_scheduleSorting">Default schedule sorting</string>
+    <string name="shortly">shortly</string>
 </resources>
