@@ -137,22 +137,20 @@ class ScheduleActivity extends ScalaActivity with HomeButton {
     implicit val ec: ExecutionContext = ExecutionContext.fromExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
 
     val displayProgressBarFuture = {
-      if (originallyOrdered.isEmpty) {
-        // No data available from previous fetches ⇒ display progress bar
-        val displayProgressBarPromise = Promise[Unit]
-        runOnUiThread(new Runnable {
-          override def run(): Unit = {
+      val displayProgressBarPromise = Promise[Unit]
+      runOnUiThread(new Runnable {
+        override def run(): Unit = {
+          if (originallyOrdered.isEmpty) {
+            // No data available from previous fetches ⇒ display progress bar
             progressBar.setVisibility(View.VISIBLE)
-            displayProgressBarPromise.complete(Success(Unit))
           }
-        })
-        displayProgressBarPromise.future
-      } else {
-        Future.successful(Unit)
-      }
+          displayProgressBarPromise.complete(Success(Unit))
+        }
+      })
+      displayProgressBarPromise.future
     }
 
-    val scheduleFuture = ScheduleItem.fetch(station).zip(displayProgressBarFuture) map { case (a, _) => a }
+    val scheduleFuture = ScheduleItem.fetch(station).zip(displayProgressBarFuture) map { case (a, _) ⇒ a }
 
     scheduleFuture mapUI { schedules ⇒
       originallyOrdered = schedules
