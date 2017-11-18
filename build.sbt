@@ -21,7 +21,7 @@ libraryDependencies ++= Seq(
   "com.github.ghik" %% "silencer-lib" % "0.5"
 )
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.11.11"
 
 scalacOptions ++= Seq("-target:jvm-1.7", "-feature", "-deprecation", "-Xfatal-warnings")
 
