@@ -54,24 +54,32 @@ object Station {
         .fields("value").asInstanceOf[JsString]
         .value
 
-      val firstPoint = children
+      val stopPointsChildren = children
         .fields("stopPoints").asInstanceOf[JsArray].elements
         .apply(0).asInstanceOf[JsObject]
-        .fields("children").asInstanceOf[JsObject]
-        .fields("stopPoint").asInstanceOf[JsArray].elements
-        .apply(0).asInstanceOf[JsObject]
-        .fields("children").asInstanceOf[JsObject]
-      // What the fuck. Who designed this?
+        .fields("children")
 
-      val gpsX = firstPoint
-        .fields("gpsX").asInstanceOf[JsArray].elements
-        .apply(0).asInstanceOf[JsObject]
-        .fields("value").asInstanceOf[JsString].value
+      val (gpsX, gpsY) = stopPointsChildren match {
+        case stopPointsChildrenObject: JsObject ⇒ {
+          val firstPoint = stopPointsChildrenObject
+            .fields("stopPoint").asInstanceOf[JsArray].elements
+            .apply(0).asInstanceOf[JsObject]
+            .fields("children").asInstanceOf[JsObject]
 
-      val gpsY = firstPoint
-        .fields("gpsY").asInstanceOf[JsArray].elements
-        .apply(0).asInstanceOf[JsObject]
-        .fields("value").asInstanceOf[JsString].value
+          val gpsX = firstPoint
+            .fields("gpsX").asInstanceOf[JsArray].elements
+            .apply(0).asInstanceOf[JsObject]
+            .fields("value").asInstanceOf[JsString].value
+
+          val gpsY = firstPoint
+            .fields("gpsY").asInstanceOf[JsArray].elements
+            .apply(0).asInstanceOf[JsObject]
+            .fields("value").asInstanceOf[JsString].value
+
+          (gpsX, gpsY)
+        }
+        case _ => ("NONE", "NONE")
+      }
 
       (name, gpsX, gpsY)
     }
