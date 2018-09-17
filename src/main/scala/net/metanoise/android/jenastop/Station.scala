@@ -40,7 +40,7 @@ case class Station(
 
 object Station {
   def fetchStations()(implicit ec: ExecutionContext): Future[Seq[(String, String, String)]] = Future {
-    val url = new URL("http://www.nahverkehr-jena.de/index.php?eID=ajaxDispatcher&request[pluginName]=Stopsmonitor&request[controller]=Stopsmonitor&request[action]=getAllStops")
+    val url = new URL("https://www.nahverkehr-jena.de/index.php?eID=ajaxDispatcher&request[pluginName]=Stopsmonitor&request[controller]=Stopsmonitor&request[action]=getAllStops")
     val conn = url.openConnection.asInstanceOf[HttpURLConnection]
     val json = Source.fromInputStream(conn.getInputStream).mkString.parseJson
 
