@@ -2,9 +2,9 @@ enablePlugins(android.AndroidApp)
 
 name := "jenastop"
 
-versionName := Some("2.2-SNAPSHOT")
+versionName := Some("2.1.2")
 
-versionCode := Some(31)
+versionCode := Some(32)
 
 platformTarget in Android := "android-27"
 
